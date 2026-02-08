@@ -13,128 +13,108 @@
     }
   },
   "navigation": {
-    "languages": [
+    "tabs": [
       {
-        "language": "en",
-        "versions": [
+        "tab": "Documentation",
+        "icon": "book",
+        "groups": [
           {
-            "version": "11",
-            "products": [
+            "group": "Getting Started",
+            "icon": "rocket",
+            "pages": [
               {
-                "product": "SDAS",
-                "tabs": [
-                  {
-                    "tab": "Documentation",
-                    "icon": "book",
-                    "dropdowns": [
-                      {
-                        "dropdown": "TEST",
-                        "groups": [
-                          {
-                            "group": "Getting Started",
-                            "icon": "rocket",
-                            "pages": [
-                              {
-                                "title": "Introduction",
-                                "path": "introduction",
-                                "icon": "home"
-                              },
-                              {
-                                "title": "Quickstart",
-                                "path": "quickstart",
-                                "icon": "zap"
-                              }
-                            ]
-                          },
-                          {
-                            "group": "Core Concepts",
-                            "icon": "layers",
-                            "pages": [
-                              {
-                                "title": "Features",
-                                "path": "features",
-                                "icon": "file-text"
-                              },
-                              {
-                                "title": "Integrations",
-                                "path": "integrations",
-                                "icon": "plug"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "tab": "API Reference",
-                    "icon": "code",
-                    "groups": [
-                      {
-                        "group": "Endpoints",
-                        "openapi": "api-reference/openapi.yaml",
-                        "pages": []
-                      }
-                    ]
-                  },
-                  {
-                    "tab": "Help Center",
-                    "icon": "help-circle",
-                    "pages": [
-                      {
-                        "title": "Help Center",
-                        "path": "help-center",
-                        "icon": "home"
-                      },
-                      {
-                        "group": "FAQs",
-                        "icon": "help-circle",
-                        "expandable": false,
-                        "pages": [
-                          {
-                            "title": "Getting Started Authentication",
-                            "path": "help-center/faq/getting-started-authentication"
-                          }
-                        ]
-                      },
-                      {
-                        "group": "Troubleshooting",
-                        "icon": "alert-triangle",
-                        "expandable": false,
-                        "pages": [
-                          {
-                            "title": "Missing Docs",
-                            "path": "help-center/troubleshooting/missing-docs"
-                          }
-                        ]
-                      },
-                      {
-                        "group": "Guides",
-                        "icon": "book-open",
-                        "expandable": false,
-                        "pages": [
-                          {
-                            "title": "Create Project Space",
-                            "path": "help-center/guides/create-project-space"
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "tab": "Changelog",
-                    "icon": "clock",
-                    "pages": [
-                      {
-                        "title": "Release History",
-                        "path": "changelog",
-                        "icon": "history"
-                      }
-                    ]
-                  }
-                ]
+                "title": "Introduction",
+                "path": "introduction",
+                "icon": "home"
+              },
+              {
+                "title": "Quickstart",
+                "path": "quickstart",
+                "icon": "zap"
               }
             ]
+          },
+          {
+            "group": "Core Concepts",
+            "icon": "layers",
+            "pages": [
+              {
+                "title": "Features",
+                "path": "features",
+                "icon": "file-text"
+              },
+              {
+                "title": "Integrations",
+                "path": "integrations",
+                "icon": "plug"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "icon": "code",
+        "groups": [
+          {
+            "group": "Endpoints",
+            "openapi": "api-reference/openapi.yaml",
+            "pages": []
+          }
+        ]
+      },
+      {
+        "tab": "Help Center",
+        "icon": "help-circle",
+        "pages": [
+          {
+            "title": "Help Center",
+            "path": "help-center",
+            "icon": "home"
+          },
+          {
+            "group": "FAQs",
+            "icon": "help-circle",
+            "expandable": false,
+            "pages": [
+              {
+                "title": "Getting Started Authentication",
+                "path": "help-center/faq/getting-started-authentication"
+              }
+            ]
+          },
+          {
+            "group": "Troubleshooting",
+            "icon": "alert-triangle",
+            "expandable": false,
+            "pages": [
+              {
+                "title": "Missing Docs",
+                "path": "help-center/troubleshooting/missing-docs"
+              }
+            ]
+          },
+          {
+            "group": "Guides",
+            "icon": "book-open",
+            "expandable": false,
+            "pages": [
+              {
+                "title": "Create Project Space",
+                "path": "help-center/guides/create-project-space"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Changelog",
+        "icon": "clock",
+        "pages": [
+          {
+            "title": "Release History",
+            "path": "changelog",
+            "icon": "history"
           }
         ]
       }
@@ -144,23 +124,5 @@
   "logo-dark": "https://blob-cdn.documentation.ai/org-3a9a3d5c-3821-4759-aa2d-02faf765c2c5/doc-bd7c5e4b-3e9c-4753-ac40-16ace83257b9/1770527931893-pe2ebhjcb5-haltman--8-.png?q=85&fm=auto&auto=compress%2Cformat",
   "logo-light": "https://blob-cdn.documentation.ai/org-3a9a3d5c-3821-4759-aa2d-02faf765c2c5/doc-bd7c5e4b-3e9c-4753-ac40-16ace83257b9/1770527958818-fe2xjofhmad-haltman--7-.png?q=85&fm=auto&auto=compress%2Cformat",
   "favicon": "https://blob-cdn.documentation.ai/org-3a9a3d5c-3821-4759-aa2d-02faf765c2c5/doc-bd7c5e4b-3e9c-4753-ac40-16ace83257b9/1770527791418-1u8pdfsv8hlh-favicon.ico?q=85&fm=auto&auto=compress%2Cformat",
-  "initialRoute": "introduction",
-  "navbar": {
-    "actions": {
-      "primary": {
-        "title": "STS > GRL > NAV > PRIMARY",
-        "link": "https://haltman.io/"
-      },
-      "links": [
-        {
-          "title": "STS > GRL > NAV > SECONDARY",
-          "link": "https://haltman.io/"
-        },
-        {
-          "title": "STS > GRL > NAV > SECONDARY 2",
-          "link": ""
-        }
-      ]
-    }
-  }
+  "initialRoute": "introduction"
 }

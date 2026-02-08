@@ -1,151 +1,73 @@
 ---
-title: Core Features of Haltman
-description: Explore the essential tools in Haltman for effective documentation management and collaboration.
+title: Features Overview
+description: Overview of all Haltman.io open-source projects and their core capabilities.
 ---
 
-## Overview
+## Open Source OSINT Tools
 
-Haltman provides powerful features to streamline your documentation workflow. You organize content hierarchically, collaborate in real-time, search efficiently, and track changes with version control. These tools help teams maintain consistent, up-to-date documentation.
+All tools are written in **Go 1.22+**, designed for speed, explicit control, and pipeline-friendly output. Most require no API key and no configuration files.
 
 <Columns cols={2}>
-  <Card title="Organize Easily" icon="folder" href="#document-organization">
-    Structure your docs with folders and pages.
+  <Card title="Zero Config" icon="zap" href="/open-source/ip-thc">
+    Most tools work out of the box — no keys, no env vars, no config files.
   </Card>
-  <Card title="Collaborate Seamlessly" icon="users" href="#collaboration">
-    Edit together with live previews.
+  <Card title="Pipeline-Friendly" icon="terminal" href="/open-source/search-leaks">
+    Structured, line-oriented output designed for grep, awk, and automation.
   </Card>
-  <Card title="Search Smartly" icon="search" href="#search">
-    Find content quickly with advanced filters.
+  <Card title="Proxy & TLS" icon="shield" href="/open-source/brave-search">
+    HTTP, HTTPS, and SOCKS5 proxy support. Optional TLS bypass for lab environments.
   </Card>
-  <Card title="Track Versions" icon="git-branch" href="#version-control">
-    Revert changes and maintain history.
-  </Card>
-</Columns>
-
-## Document Organization and Structuring
-
-Create a clear hierarchy for your documentation using folders, pages, and subpages. You nest content logically to reflect your project's structure.
-
-<Steps>
-  <Step title="Create Folders" icon="folder-plus">
-    Start by creating top-level folders for major sections like "API Reference" or "User Guides".
-
-    ```
-    /docs
-    ├── api/
-    ├── guides/
-    └── changelog/
-    ```
-  </Step>
-  <Step title="Add Pages" icon="file-text">
-    Within folders, add MDX pages with frontmatter for metadata.
-  </Step>
-  <Step title="Link Navigation" icon="link">
-    Use sidebar configuration to auto-generate navigation.
-  </Step>
-</Steps>
-
-<Callout kind="tip">
-  Use consistent naming conventions like `{kebab-case}` for page slugs to improve navigation.
-</Callout>
-
-## Collaboration and Editing Workflows
-
-Invite team members to edit documents simultaneously. Changes appear live, with conflict resolution built-in.
-
-<Tabs>
-  <Tab title="Editor Role" icon="edit-3">
-    Make changes and see real-time updates from others.
-
-    <CodeGroup tabs="Markdown,MDX">
-    ````markdown
-    ## Heading
-
-    Edit this content collaboratively.
-    ````
-
-    ````mdx
-    ## Heading
-
-    <Callout kind="info">Live collaboration active.</Callout>
-    ````
-    </CodeGroup>
-  </Tab>
-  <Tab title="Reviewer Role" icon="eye">
-    Preview changes and leave inline comments without editing.
-  </Tab>
-</Tabs>
-
-## Search and Filtering Capabilities
-
-Haltman's search indexes all content, including code blocks and frontmatter. Filter by tags, dates, or authors.
-
-```mermaid
-graph TD
-    A[User Query] --> B[Index Search]
-    B --> C[Filter Tags]
-    C --> D[Highlight Results]
-    D --> E[Display Matches]
-```
-
-Use the API for programmatic search:
-
-<CodeGroup tabs="JavaScript,Python">
-````javascript
-const results = await fetch('https://api.example.com/search?q=authentication&tags=guide');
-console.log(results);
-````
-
-````python
-import requests
-response = requests.get('https://api.example.com/search', params={
-    'q': 'authentication',
-    'tags': 'guide'
-})
-print(response.json())
-````
-</CodeGroup>
-
-<ParamField query="q" param-type="string" required="true">
-  Search query string.
-</ParamField>
-
-<ParamField query="tags" param-type="array" required="false">
-  Filter by comma-separated tags.
-</ParamField>
-
-## Version Control Basics
-
-Track every change with automatic versioning. Compare diffs and revert to previous versions.
-
-<Expandable title="Advanced Version Workflow" default-open="false">
-  Branch documents for experiments:
-
-  ```
-  main ── v1.0 ── v1.1
-           │
-         feature-branch
-  ```
-
-  Merge via pull requests with approval workflows.
-</Expandable>
-
-<Callout kind="success">
-  Enable version control in project settings to start tracking changes immediately.
-</Callout>
-
-## Next Steps
-
-Explore these features hands-on:
-
-<Columns cols={3}>
-  <Card title="Quickstart" icon="rocket" href="/quickstart">
-    Set up your first project.
-  </Card>
-  <Card title="API Reference" icon="code" href="/authentication">
-    Integrate programmatically.
-  </Card>
-  <Card title="Changelog" icon="git-commit" href="/changelog">
-    See recent updates.
+  <Card title="Rate Limiting" icon="clock" href="/open-source/reverse-whois">
+    Built-in rate limiting and concurrency controls for safe operation at scale.
   </Card>
 </Columns>
+
+### Tool Comparison
+
+| Tool | API Key Required | Data Source | Primary Use Case |
+|------|:---:|------------|-----------------|
+| [ip-thc](/open-source/ip-thc) | No | ip.thc.org | Reverse DNS, subdomains, CNAME |
+| [search-leaks](/open-source/search-leaks) | No | Hudson Rock | Breach/leak statistics |
+| [reverse-whois](/open-source/reverse-whois) | Yes (WhoisXML) | WhoisXML API | Reverse WHOIS enumeration |
+| [sub-alter](/open-source/sub-alter) | Yes (WhoisXML) | WhoisXML API | Domain/subdomain discovery |
+| [brave-search](/open-source/brave-search) | Yes (Brave) | Brave Search | URL extraction from search |
+
+---
+
+## Mail Forwarding Service
+
+A complete, free, public mail forwarding service at [forward.haltman.io](https://forward.haltman.io).
+
+### Key characteristics
+
+- **Stateless** — no mailbox storage, forwarding only
+- **Abuse-aware** — email confirmation, rate limiting, anti-spoofing
+- **Fully open-source** — no open-core, no artificial limitations, no telemetry
+- **Self-hostable** — complete documentation to deploy on your own infrastructure
+
+### Stack Components
+
+| Component | Technology | Role |
+|-----------|-----------|------|
+| [Core Stack](/mail-forwarding-selfhost/mail-forwarding-core) | Postfix, MariaDB, PostSRSd, OpenDKIM | SMTP forwarding engine |
+| [API](/mail-forwarding-selfhost/mail-forwarding-api) | Node.js, Express | Alias management endpoints |
+| [UI](/mail-forwarding-selfhost/mail-forwarding-ui) | Next.js, React, TailwindCSS | Web frontend for users |
+| [Cleanup](/mail-forwarding-selfhost/cleanup-cronjob) | Bash, cron | Expired token purge |
+
+---
+
+## Design Principles
+
+<ExpandableGroup>
+  <Expandable title="No magic, no abstractions" default-open="true">
+    All projects are intentionally simple and transparent. If you understand the underlying technology (SMTP, DNS, HTTP), you can understand and trust the implementation.
+  </Expandable>
+
+  <Expandable title="No vendor lock-in" default-open="false">
+    Everything is open-source. No proprietary dependencies. Standard protocols and widely available tools.
+  </Expandable>
+
+  <Expandable title="Explicit over implicit" default-open="false">
+    All behavior is controlled via CLI flags or environment variables. No hidden defaults, no environment sniffing, no telemetry.
+  </Expandable>
+</ExpandableGroup>

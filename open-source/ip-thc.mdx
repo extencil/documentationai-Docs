@@ -1,0 +1,262 @@
+---
+title: ip-thc
+description: >-
+  Fast CLI for DNS intelligence using the ip.thc.org public dataset.
+  Supports Reverse DNS, Subdomain, and CNAME queries on 5.14 billion+ mapped domains.
+---
+
+**ip-thc** is an open-source, operator-oriented command-line tool maintained by a **member of** [Haltman.io](https://haltman.io). It provides direct access to the public intelligence API of [ip.thc.org](https://ip.thc.org), a dataset indexing **~5.14 billion domains**.
+
+The tool is designed for **practical reconnaissance and investigation**, enabling fast pivots commonly required during:
+
+- Red Team operations
+- Penetration testing
+- Bug bounty reconnaissance
+- Infrastructure and hosting analysis
+
+ip-thc supports three core lookup modes:
+
+- **Reverse DNS** — IP → hosted domains
+- **Subdomain enumeration** — domain → subdomains
+- **CNAME discovery** — target domain → domains pointing to it
+
+The focus is **speed, explicit control, and safe operation**. There is no API key, no authentication layer, and no local state beyond execution.
+
+<Callout kind="info">
+  This project is developed independently. Haltman.io has **no affiliation** with The Hacker's Choice (THC).
+</Callout>
+
+<Frame>
+  <img src="https://github.com/haltman-io/ip-thc/raw/main/docs/screenshots/basic-run.png" alt="ip-thc basic run" />
+</Frame>
+
+---
+
+## Installation
+
+### Requirements
+
+- **Go 1.22+**
+- Network access to [ip.thc.org](https://ip.thc.org)
+- Optional: proxy access (HTTP / HTTPS / SOCKS5)
+
+<Tabs>
+  <Tab title="Install to $GOBIN" icon="download">
+    ```bash
+    go install github.com/haltman-io/ip-thc/cmd/ip-thc@latest
+    ```
+  </Tab>
+
+  <Tab title="Build from source" icon="code">
+    ```bash
+    git clone https://github.com/haltman-io/ip-thc.git
+    cd ip-thc
+
+    go mod download
+    go build -o ip-thc ./cmd/ip-thc
+    ```
+
+    Run:
+
+    ```bash
+    ./ip-thc --help
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+## Configuration
+
+**No configuration is required.**
+
+- No API keys
+- No environment variables
+- No config files
+
+All behavior is controlled via **CLI flags**.
+
+Optional runtime controls include:
+- Rate limiting
+- Concurrency
+- Proxy usage
+- TLS verification behavior
+
+---
+
+## Usage
+
+### Help
+
+```bash
+$ ./ip-thc --help
+
+ip-thc (v1.0.0-stable) - ip.thc.org API client (ReverseDNS / Subdomain / CNAME)
+
+USAGE:
+  ip-thc [mode] [targets] [options]
+
+TARGET INPUT:
+  --target <target>           Define a target (repeatable, comma-separated supported)
+  -t <target>
+
+  --target-list <file>        File with targets (one per line; repeatable, comma-separated supported)
+  -tL <file>
+
+  --stdin                     Enable reading targets from STDIN (pipe) as additional targets
+
+MODES (select exactly one):
+  --reverse-dns               Reverse DNS lookup (API: POST /api/v1/lookup)
+  -rdns
+
+  --subdomain                 Subdomain lookup (API: POST /api/v1/lookup/subdomains)
+  -sub
+
+  --cname                     CNAME lookup (API: POST /api/v1/lookup/cnames)
+  -cn
+
+OPTIONS:
+  --results <n>               Max results per API request (default: 10)
+  --limit <n>                 Alias for --results
+  -r <n>
+
+  --all                       Auto-pagination until next_page_state is empty
+
+  --threads <n>               Concurrent targets (default: 1)
+  --rate-limit <rps>          Max requests per second (default: 5)
+  -rl <rps>
+
+  --proxy <url>               Proxy URL: http://host:port, https://host:port, socks5://host:port
+  --proxy-auth <user:pass>    Proxy auth: HTTP Basic or SOCKS5 user/pass
+  --no-proxy                  Ignore proxy environment variables
+
+  --insecure                  Disable TLS verification (curl-style)
+  -k
+
+  --output <file>             Save sorted + deduped results to file
+  -o <file>
+
+  --silent                    Print results only (also suppress banner)
+  -s
+
+  --debug                     Verbose debug logs to STDERR
+
+  --timeout <duration>        HTTP timeout (default: 30s). Examples: 30s, 2m
+  --user-agent <ua>           Override User-Agent
+```
+
+---
+
+### Reverse DNS (IP → domains)
+
+```bash
+ip-thc -rdns -t 1.1.1.1
+```
+
+Fetch all available pages:
+
+```bash
+ip-thc -rdns -t 1.1.1.1 --all
+```
+
+---
+
+### Subdomain enumeration (domain → subdomains)
+
+```bash
+ip-thc -sub -t example.com
+```
+
+Multiple targets:
+
+```bash
+ip-thc -sub -t google.com,twitter.com
+```
+
+From file:
+
+```bash
+ip-thc -sub -tL targets.txt
+```
+
+From STDIN (explicit):
+
+```bash
+cat targets.txt | ip-thc --stdin -sub
+```
+
+---
+
+### CNAME lookup (target → pointing domains)
+
+```bash
+ip-thc -cn -t github.io
+```
+
+Use case examples:
+- SaaS discovery
+- Hosting relationship analysis
+- Subdomain takeover surface mapping
+
+---
+
+### Output to file (sorted & deduplicated)
+
+```bash
+ip-thc -sub -t example.com --all -o subdomains.txt
+```
+
+Behavior:
+- One result per line
+- Automatically sorted
+- Duplicates removed
+
+---
+
+## Possible Problems / Important Notes
+
+### Rate limiting
+
+- Default client limit: **5 requests/second**
+- If the server responds with `X-Ratelimit-Remaining < 5`, the tool **pauses automatically for 15 seconds**.
+
+Use conservative limits at scale:
+
+```bash
+ip-thc -sub -t example.com --rate-limit 2
+```
+
+### Proxy environments
+
+Supported proxy schemes: `http://`, `https://`, `socks5://`, `socks5h://`
+
+```bash
+ip-thc -sub -t example.com --proxy socks5://127.0.0.1:9050
+```
+
+To ignore system proxy variables:
+
+```bash
+ip-thc --no-proxy ...
+```
+
+### TLS verification
+
+```bash
+ip-thc -sub -t example.com -k
+```
+
+<Callout kind="alert">
+  Disables TLS verification. **Use only if you understand the risk** (MITM visibility).
+</Callout>
+
+### Legal & ethical use
+
+This tool is intended for authorized security testing, defensive research, and lawful investigations. You are responsible for complying with applicable laws, engagement scope, and upstream service usage policies.
+
+---
+
+## External References
+
+- [ip.thc.org API documentation](https://ip.thc.org/docs/)
+- [GitHub: haltman-io/ip-thc](https://github.com/haltman-io/ip-thc)

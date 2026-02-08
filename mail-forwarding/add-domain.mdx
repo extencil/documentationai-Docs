@@ -1,0 +1,41 @@
+---
+title: Add Your Domain
+description: How to add your own root domain to the free mail forwarding service at forward.haltman.io.
+---
+
+<Callout kind="alert">
+  This page is exclusively for those who have a domain and want to add it to the Free Mail Forwarding Service at [forward.haltman.io](https://forward.haltman.io).
+</Callout>
+
+## Important
+
+This is an **asynchronous process**. To add a domain or subdomain, please contact us through the channels below. We will provide all the support you need to configure your DNS records correctly.
+
+- [root@haltman.io](mailto:root@haltman.io)
+- [https://t.me/haltman_group](https://t.me/haltman_group)
+
+---
+
+## Required DNS Configurations — Root Domain
+
+**Example domain:** `example.com`
+
+### DNS Records Table
+
+| Type | Name | Content | Priority |
+|------|------|---------|----------|
+| MX | @ | mail.abin.lat | 10 |
+| TXT | @ | `v=spf1 mx -all` | N/A |
+| TXT | \_dmarc | `v=DMARC1; p=none` | N/A |
+
+### Zone File (Copy & Paste)
+
+```bash
+example.com.              MX   10 mail.abin.lat.
+example.com.              TXT     "v=spf1 mx -all"
+_dmarc.example.com.       TXT     "v=DMARC1; p=none"
+```
+
+<Callout kind="tip">
+  For subdomain configuration, see [Add Your Subdomain](/mail-forwarding/add-subdomain).
+</Callout>

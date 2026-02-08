@@ -1,21 +1,35 @@
 ---
-title: Creating a Project Documentation Space
-description: Set up a new documentation space in Haltman.
+title: Setting Up Your First Mail Alias
+description: Step-by-step guide to creating your first mail forwarding alias on forward.haltman.io.
 ---
 
-## Steps
+## Create your first alias
 
 <Steps>
-  <Step title="Open your dashboard">
-    Go to https://app.haltman.com and sign in.
+  <Step title="Go to forward.haltman.io" icon="globe">
+    Visit [https://forward.haltman.io/](https://forward.haltman.io/) in your browser.
   </Step>
-  <Step title="Click New Space">
-    Find the sidebar, then click **New Space**.
+
+  <Step title="Choose your alias" icon="edit-3">
+    Pick a **handle** (local-part), select an available **domain**, and enter your **destination email**.
   </Step>
-  <Step title="Name your space">
-    Enter a clear and unique name for your documentation space.
+
+  <Step title="Confirm via email" icon="mail">
+    Check your inbox for the confirmation link. Click it to activate.
   </Step>
-  <Step title="Start managing docs">
-    Your new space appears under Projects. Click to add, edit, or organize documents.
+
+  <Step title="Test it" icon="check-circle">
+    Send a test email to your new alias and verify it arrives at your destination inbox.
   </Step>
 </Steps>
+
+## Need more options?
+
+<Columns cols={2}>
+  <Card title="Create via cURL" icon="terminal" href="/mail-forwarding/create-alias-curl">
+    Programmatic alias creation via command line.
+  </Card>
+  <Card title="Add your own domain" icon="globe" href="/mail-forwarding/add-domain">
+    Use a custom domain with the service.
+  </Card>
+</Columns>

@@ -1,23 +1,48 @@
 ---
-title: Missing Documentation Space
-description: Resolve missing doc space issues in Haltman.
+title: Troubleshooting Common Issues
+description: Solutions for common problems with Haltman.io tools and services.
 ---
 
-## Problem
+## CLI tool not found after installation
 
-- Can't see your project docs after login.
-- "No documentation space found" message.
-
-## Quick Fix
+If you installed a tool via `go install` but it's not found:
 
 <Steps>
-  <Step title="Check project list">
-    Ensure you've selected the correct project in the sidebar.
+  <Step title="Check your GOPATH">
+    Ensure `$GOBIN` (or `$(go env GOPATH)/bin`) is in your `PATH`.
+
+    ```bash
+    echo $(go env GOPATH)/bin
+    ```
   </Step>
-  <Step title="Create a documentation space">
-    Click **New Space** and enter a name. Docs will appear under your project.
-  </Step>
-  <Step title="Refresh the page">
-    Reload to update your workspace.
+  <Step title="Add to PATH">
+    Add to your shell profile:
+
+    ```bash
+    export PATH="$PATH:$(go env GOPATH)/bin"
+    ```
   </Step>
 </Steps>
+
+## Mail forwarding alias not working
+
+- **Did you confirm via email?** — Check your inbox (and spam) for the confirmation link.
+- **Is the domain active?** — The domain must be authorized in the database.
+- **DNS misconfigured?** — MX, SPF, and DMARC records must be set correctly. See the [DNS Configuration guide](/mail-forwarding-selfhost/dns-configuration).
+
+## API returns 429 / rate limited
+
+All tools and services enforce rate limits. Reduce your request rate:
+
+```bash
+# Example: reduce to 1 request per second
+tool-name -t target --rate-limit 1
+```
+
+## TLS verification errors
+
+If you're behind a proxy or in a lab environment, use `-k` / `--insecure` to bypass TLS verification. **Do not use in production.**
+
+## Still stuck?
+
+Reach out via [Telegram](https://t.me/haltman_group) or email [root@haltman.io](mailto:root@haltman.io).

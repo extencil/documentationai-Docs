@@ -1,0 +1,534 @@
+---
+title: mail-forwarding-core
+description: >-
+  Complete guide to installing the core mail forwarding stack: MariaDB, DNS,
+  PostSRSd, Postfix, and OpenDKIM. A simple, abuse-aware, open-source solution.
+---
+
+**mail-forwarding-core** (or simply **core**) is the reference implementation used by [Haltman.io](https://haltman.io) to provide a free, public, production-grade mail forwarding service.
+
+It is designed to be:
+
+- Fully open-source
+- Stateless (no mailbox storage)
+- Abuse-aware by design
+- Deterministic and auditable
+- Scalable by composition, not complexity
+
+There is **no open-core**, **no artificial limitation**, and **no telemetry**.
+
+A public instance is available at [https://forward.haltman.io/](https://forward.haltman.io/).
+
+---
+
+## Architecture Overview
+
+| Component | Role |
+|-----------|------|
+| Postfix | SMTP engine and policy enforcement |
+| PostSRSd | Sender Rewriting Scheme (SRS) |
+| MariaDB | Domain and alias lookup backend |
+| OpenDKIM | Optional DKIM signing |
+| DNS | Authentication and routing |
+
+### High-level flow
+
+```
+Inbound Mail
+   ↓
+Postfix (smtpd)
+   ↓  (domain + alias lookup)
+MariaDB
+   ↓
+PostSRSd (SRS rewrite)
+   ↓
+Postfix (smtp)
+   ↓
+External Destination
+```
+
+No messages are stored. No queues are inspected. No content is logged.
+
+---
+
+## Installation Order
+
+<Callout kind="alert">
+  The order below is **mandatory**. Installing components out of order will cause misleading failures.
+</Callout>
+
+1. MariaDB (schema + user)
+2. DNS records (MX / SPF / DMARC)
+3. PostSRSd
+4. Postfix
+5. OpenDKIM (optional, last)
+
+---
+
+## 1. MariaDB (Lookup Backend)
+
+MariaDB is used **only** as a lookup backend. Postfix never writes to it.
+
+### Install
+
+```bash
+sudo apt install mariadb-server
+```
+
+### Create database and user
+
+```sql
+CREATE DATABASE maildb;
+
+CREATE USER 'maildb'@'localhost' IDENTIFIED BY 'strong-password';
+GRANT SELECT, INSERT ON maildb.* TO 'maildb'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+### Required tables
+
+#### `domain` table
+
+```sql
+CREATE TABLE `domain` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `active` tinyint(1) DEFAULT 1,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+#### `alias` table
+
+```sql
+CREATE TABLE `alias` (
+  `id` int(11) NOT NULL,
+  `address` varchar(255) NOT NULL,
+  `goto` varchar(255) NOT NULL,
+  `active` tinyint(1) DEFAULT 1,
+  `domain_id` int(11) NOT NULL,
+  `created` timestamp NULL DEFAULT current_timestamp(),
+  `modified` timestamp NULL DEFAULT current_timestamp()
+    ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_alias_address` (`address`),
+  KEY `address` (`address`),
+  KEY `domain_id` (`domain_id`),
+  CONSTRAINT `alias_ibfk_1`
+    FOREIGN KEY (`domain_id`) REFERENCES `domain` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+---
+
+## 2. DNS Configuration
+
+Each forwarded domain **must** define DNS records correctly.
+
+### Required records
+
+#### MX
+
+```bash
+example.org. MX 10 mail.example.net.
+```
+
+#### SPF
+
+```bash
+example.org. TXT "v=spf1 mx -all"
+```
+
+#### DMARC
+
+```bash
+_dmarc.example.org. TXT "v=DMARC1; p=none"
+```
+
+<Callout kind="tip">
+  If OpenDKIM is enabled later, a DKIM TXT record will also be required. See the full [DNS Configuration guide](/mail-forwarding-selfhost/dns-configuration).
+</Callout>
+
+---
+
+## 3. PostSRSd (Mandatory)
+
+Mail forwarding **requires SRS** to preserve SPF alignment.
+
+### Install
+
+```bash
+sudo apt install postsrsd
+```
+
+### Configuration
+
+Edit `/etc/default/postsrsd`:
+
+```ini
+SRS_DOMAIN=example.org
+SRS_SEPARATOR==
+SRS_SECRET=/etc/postsrsd.secret
+SRS_HASHLENGTH=4
+SRS_HASHMIN=4
+SRS_FORWARD_PORT=10001
+SRS_REVERSE_PORT=10002
+RUN_AS=postsrsd
+SRS_LISTEN_ADDR=127.0.0.1
+CHROOT=/var/lib/postsrsd
+```
+
+### Generate secret
+
+```bash
+openssl rand -hex 32 | sudo tee /etc/postsrsd.secret
+sudo chmod 600 /etc/postsrsd.secret
+```
+
+### Start service
+
+```bash
+sudo systemctl enable postsrsd
+sudo systemctl restart postsrsd
+```
+
+Validate:
+
+```bash
+ss -ltnp | grep 1000
+```
+
+---
+
+## 4. Postfix (Core Engine)
+
+Postfix acts strictly as a forwarding MTA.
+
+### Install
+
+```bash
+sudo apt install postfix postfix-mysql
+```
+
+Choose **Internet Site**, but delivery will be disabled.
+
+### Key principles
+
+- No local delivery
+- No open relay
+- MySQL-backed domains and aliases
+- Sender spoofing protection
+- Mandatory SRS integration
+
+---
+
+### `/etc/postfix/main.cf`
+
+Primary Postfix configuration. No `mydestination` → no local delivery. Virtual domains/aliases backed by MySQL. Explicit relay and recipient restrictions.
+
+```ini
+# Postfix compatibility level (after major upgrades)
+compatibility_level = 3.6
+
+# SMTP Identity
+myhostname = mail.example.com
+mydomain = example.com
+myorigin = $mydomain
+
+# Networking listen interfaces
+inet_interfaces = all
+inet_protocols = ipv4
+
+# The hostname to send on SMTP HELO or EHLO command
+smtp_helo_name = mail.example.com
+
+# Disable local email delivery
+mydestination =
+
+# Virtual domains are managed by MySQL
+virtual_alias_domains = mysql:/etc/postfix/mysql-virtual-domains.cf
+
+# Virtual aliases are managed by MySQL
+virtual_alias_maps = mysql:/etc/postfix/mysql-virtual-aliases.cf
+
+# Disable stack details on unknown alias addresses errors
+show_user_unknown_table_name = no
+
+# Disable VRFY command to prevent alias enumeration
+disable_vrfy_command = yes
+
+# Disable SASL for security
+smtpd_sasl_auth_enable = no
+
+# The numerical Postfix SMTP server response code when a recipient address is local
+unknown_local_recipient_reject_code = 550
+
+# Avoid information disclosure to SMTP client
+smtpd_banner = $myhostname ESMTP
+
+# Wait to reject
+smtpd_delay_reject = yes
+
+# Anti open-relay
+smtpd_relay_restrictions =
+    permit_mynetworks,
+    reject_unauth_destination
+
+# Recipient restrictions
+smtpd_recipient_restrictions =
+    permit_mynetworks,
+    reject_non_fqdn_recipient,
+    reject_unknown_recipient_domain,
+    reject_unlisted_recipient
+
+# Sender restrictions (dynamic anti-spoofing)
+smtpd_sender_restrictions =
+    permit_mynetworks,
+    check_sender_access regexp:/etc/postfix/block_srs_inbound.regexp,
+    check_sender_access mysql:/etc/postfix/mysql-block-local-senders.cf,
+    permit
+
+# Client limits
+smtpd_client_connection_count_limit = 15
+smtpd_client_connection_rate_limit = 60
+
+# HELO / EHLO hygiene
+smtpd_helo_required = yes
+smtpd_helo_restrictions =
+    permit_mynetworks,
+    reject_invalid_helo_hostname
+
+# TLS (enable after valid certificates are provisioned)
+#smtpd_tls_security_level = may
+#smtp_tls_security_level = may
+#smtpd_tls_cert_file = /etc/letsencrypt/live/mail.example.com/fullchain.pem
+#smtpd_tls_key_file  = /etc/letsencrypt/live/mail.example.com/privkey.pem
+smtpd_tls_received_header = no
+
+# SRS (forwarding)
+sender_canonical_maps = tcp:localhost:10001
+sender_canonical_classes = envelope_sender
+
+recipient_canonical_maps = tcp:localhost:10002
+recipient_canonical_classes = envelope_recipient
+
+# OpenDKIM (enable after valid DKIM signatures on DNS are provisioned)
+# smtpd_milters = inet:127.0.0.1:8891
+# non_smtpd_milters = $smtpd_milters
+# milter_default_action = tempfail
+```
+
+---
+
+### `/etc/postfix/master.cf`
+
+Service definitions used by Postfix. Largely defaults with no unsafe overrides:
+
+```ini
+smtp      inet  n       -       y       -       -       smtpd
+
+pickup    unix  n       -       y       60      1       pickup
+cleanup   unix  n       -       y       -       0       cleanup
+qmgr      unix  n       -       n       300     1       qmgr
+tlsmgr    unix  -       -       y       1000?   1       tlsmgr
+rewrite   unix  -       -       y       -       -       trivial-rewrite
+bounce    unix  -       -       y       -       0       bounce
+defer     unix  -       -       y       -       0       bounce
+trace     unix  -       -       y       -       0       bounce
+verify    unix  -       -       y       -       1       verify
+flush     unix  n       -       y       1000?   0       flush
+proxymap  unix  -       -       n       -       -       proxymap
+proxywrite unix -       -       n       -       1       proxymap
+smtp      unix  -       -       y       -       -       smtp
+relay     unix  -       -       y       -       -       smtp
+        -o syslog_name=${multi_instance_name?{$multi_instance_name}:{postfix}}/$service_name
+showq     unix  n       -       y       -       -       showq
+error     unix  -       -       y       -       -       error
+retry     unix  -       -       y       -       -       error
+discard   unix  -       -       y       -       -       discard
+local     unix  -       n       n       -       -       local
+virtual   unix  -       n       n       -       -       virtual
+lmtp      unix  -       -       y       -       -       lmtp
+anvil     unix  -       -       y       -       1       anvil
+scache    unix  -       -       y       -       1       scache
+postlog   unix-dgram n  -       n       -       1       postlogd
+```
+
+---
+
+### `/etc/postfix/mysql-virtual-domains.cf`
+
+Controls which domains are considered local/virtual:
+
+```ini
+user = <MARIADB_USERNAME>
+password = <MARIADB_PASSWORD>
+hosts = 127.0.0.1
+dbname = <MARIADB_DATABASE>
+query = SELECT 1 FROM domain WHERE name='%s' AND active=1
+```
+
+### `/etc/postfix/mysql-virtual-aliases.cf`
+
+Resolves email aliases:
+
+```ini
+user = <MARIADB_USERNAME>
+password = <MARIADB_PASSWORD>
+hosts = 127.0.0.1
+dbname = <MARIADB_DATABASE>
+query = SELECT goto FROM alias WHERE address='%s' AND active=1
+```
+
+### `/etc/postfix/mysql-block-local-senders.cf`
+
+Dynamic sender spoofing protection — rejects external messages forging `MAIL FROM` of hosted domains:
+
+```ini
+user = <MARIADB_USERNAME>
+password = <MARIADB_PASSWORD>
+hosts = 127.0.0.1
+dbname = <MARIADB_DATABASE>
+query = SELECT 'REJECT forged local sender' FROM domain WHERE active=1 AND name='%d' LIMIT 1
+```
+
+### `/etc/postfix/block_srs_inbound.regexp`
+
+Rejects inbound messages with SRS-formatted senders:
+
+```ini
+/^SRS[01]=/    REJECT SRS sender not accepted inbound
+```
+
+---
+
+## 5. OpenDKIM (Optional, Recommended)
+
+OpenDKIM signs outbound mail to improve deliverability.
+
+### Install
+
+```bash
+sudo apt install opendkim opendkim-tools
+```
+
+### Socket
+
+OpenDKIM listens on `inet:127.0.0.1:8891`. Postfix connects via milter.
+
+### `/etc/opendkim.conf`
+
+```ini
+Syslog                  yes
+SyslogSuccess           yes
+LogWhy                  yes
+
+Canonicalization        relaxed/simple
+SubDomains              no
+OversignHeaders         From
+
+UserID                  opendkim
+UMask                   007
+
+Socket                  inet:8891@127.0.0.1
+PidFile                 /run/opendkim/opendkim.pid
+
+KeyTable                /etc/opendkim/KeyTable
+SigningTable            refile:/etc/opendkim/SigningTable
+ExternalIgnoreList      /etc/opendkim/TrustedHosts
+InternalHosts           /etc/opendkim/TrustedHosts
+```
+
+### `/etc/opendkim/KeyTable`
+
+Maps selectors and domains to private key files:
+
+```ini
+selector1._domainkey.example.org example.org:selector1:/etc/opendkim/keys/example.org/selector1.private
+```
+
+<Callout kind="info">
+  Private key files must never be committed. File paths are deployment-specific.
+</Callout>
+
+### `/etc/opendkim/SigningTable`
+
+Defines which domains should be DKIM-signed:
+
+```ini
+*@example.org selector1._domainkey.example.org
+```
+
+### `/etc/opendkim/TrustedHosts`
+
+Defines trusted hosts (used for both `InternalHosts` and `ExternalIgnoreList`):
+
+```ini
+127.0.0.1
+localhost
+::1
+```
+
+If OpenDKIM is not installed, simply remove milter directives from Postfix.
+
+---
+
+## Validation Checklist
+
+- MX resolves to Postfix host
+- SPF passes on forwarded mail
+- SRS rewrite visible in headers
+- No local delivery occurs
+- External spoofing is rejected
+- DKIM (if enabled) signs correctly
+
+---
+
+## FAQ
+
+<ExpandableGroup>
+  <Expandable title="Is this an open relay?" default-open="false">
+    No. Relay and recipient restrictions are explicit.
+  </Expandable>
+
+  <Expandable title="Are mails logged?" default-open="false">
+    No message content is logged. Only minimal MTA operational logs exist.
+  </Expandable>
+
+  <Expandable title="Is PostSRSd optional?" default-open="false">
+    No. Forwarding without SRS breaks SPF.
+  </Expandable>
+
+  <Expandable title="Why reject inbound SRS addresses?" default-open="false">
+    To prevent external SRS forgery and abuse.
+  </Expandable>
+
+  <Expandable title="Can I use multiple domains?" default-open="false">
+    Yes. Domains and aliases are unlimited.
+  </Expandable>
+
+  <Expandable title="Is OpenDKIM mandatory?" default-open="false">
+    No, but strongly recommended for production.
+  </Expandable>
+
+  <Expandable title="Does this store mailboxes?" default-open="false">
+    No. This is forwarding only.
+  </Expandable>
+</ExpandableGroup>
+
+---
+
+## Security & Disclosure
+
+If you find a vulnerability or misconfiguration, contact [security@haltman.io](mailto:security@haltman.io).
+
+## Community & Support
+
+Join the [Haltman.io Telegram group](https://t.me/haltman_group) for questions, networking, and operational feedback.
+
+## References
+
+- [https://haltman.io/](https://haltman.io/)
+- [https://forward.haltman.io](https://forward.haltman.io)
+- [GitHub: haltman-io/mail-forwarding](https://github.com/haltman-io/mail-forwarding)

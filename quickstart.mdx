@@ -1,122 +1,145 @@
 ---
-title: Getting Started with Haltman
-description: Quickly set up your Haltman account and create your first documentation space to begin organizing projects.
+title: Quickstart
+description: Get oriented quickly. Find the right section for your use case — whether you want to use our tools, our mail forwarding service, or self-host the entire stack.
 ---
 
-## Prerequisites
+## Choose Your Path
 
-<Callout kind="info" title="Before You Begin">
-Ensure you have:
-- A modern web browser like Chrome, Firefox, or Safari
-- A valid email address for account verification
-- Optional: GitHub account for advanced integrations
-</Callout>
-
-## Sign Up and Create Your Account
-
-Follow these steps to register and access the Haltman dashboard.
-
-<Steps>
-  <Step title="Visit the Signup Page" icon="globe">
-    Navigate to the Haltman signup page at `https://app.haltman.com/signup`.
-  </Step>
-  <Step title="Enter Your Details" icon="user-plus">
-    Provide your email, create a strong password, and complete the CAPTCHA if prompted.
-    
-    Click **Create Account**.
-  </Step>
-  <Step title="Verify Your Email" icon="mail">
-    Check your inbox for a verification email from Haltman and click the link to activate your account.
-  </Step>
-</Steps>
-
-<Callout kind="tip">
-After verification, you'll land on the dashboard. Bookmark `https://app.haltman.com` for quick access.
-</Callout>
-
-## Create Your First Documentation Space
-
-Documentation spaces organize your project docs. Set one up in moments.
-
-<Steps>
-  <Step title="Click New Space" icon="plus">
-    From the dashboard, select **New Space** in the top-right corner.
-  </Step>
-  <Step title="Configure Space" icon="settings">
-    Enter a name like `My Project Docs`, add a description, and choose visibility (private or public).
-  </Step>
-  <Step title="Save and Enter" icon="folder">
-    Click **Create**. You'll enter the space editor ready to add content.
-  </Step>
-</Steps>
-
-## Upload Your Initial Documents
-
-Add files to your space using these methods.
-
-<Tabs>
-  <Tab title="Web Upload" icon="upload">
-    Drag and drop files directly into the space editor, or click **Upload** and select Markdown, PDFs, or images.
-  </Tab>
-  <Tab title="CLI Upload" icon="terminal">
-    Use the Haltman CLI for bulk uploads.
-    
-    ````bash
-    npm install -g @haltman/cli
-    haltman login --email your@email.com
-    haltman space upload my-project-docs ./docs-folder --space-id SPACE_ID
-    ````
-  </Tab>
-  <Tab title="API Upload" icon="code">
-    Send documents via the REST API.
-    
-    <CodeGroup tabs="cURL,JavaScript">
-      ````bash
-      curl -X POST https://api.haltman.com/v1/spaces/SPACE_ID/documents \
-        -H "Authorization: Bearer YOUR_API_KEY" \
-        -F "file=@/path/to/doc.md"
-      ````
-      ````javascript
-      const formData = new FormData();
-      formData.append('file', fs.createReadStream('/path/to/doc.md'));
-      
-      fetch('https://api.haltman.com/v1/spaces/SPACE_ID/documents', {
-        method: 'POST',
-        headers: { Authorization: 'Bearer YOUR_API_KEY' },
-        body: formData
-      });
-      ````
-    </CodeGroup>
-  </Tab>
-</Tabs>
-
-## Basic Interface Tour
-
-Explore the main areas of the Haltman interface.
-
-<Columns cols={3}>
-  <Card title="Sidebar Navigation" icon="menu">
-    Access spaces, search docs, and manage settings.
+<Columns cols="3">
+  <Card title="Use OSINT Tools" href="/open-source/ip-thc" icon="terminal" horizontal="false">
+    Install and run Go-based CLI tools for DNS intelligence, breach exposure, WHOIS, and more.
   </Card>
-  <Card title="Editor Workspace" icon="edit-3">
-    Real-time MDX editor with preview, version history, and AI assist.
+
+  <Card title="Use Mail Forwarding" href="/mail-forwarding/get-started" icon="mail" horizontal="false">
+    Create free email aliases on forward.haltman.io — no account required, just confirm via email.
   </Card>
-  <Card title="Publish Panel" icon="globe">
-    Preview, customize themes, and deploy your docs site instantly.
+
+  <Card title="Self-Host the Stack" href="/mail-forwarding-selfhost/get-started" icon="server" horizontal="false">
+    Deploy the full mail forwarding infrastructure on your own server with Postfix, MariaDB, and more.
   </Card>
 </Columns>
 
-## Next Steps
+## Open Source Tools — Quick Install
 
-<Callout kind="success">
-Congratulations! You've set up Haltman. Dive deeper with these resources.
+All tools require **Go 1.22+**. Install any tool with a single command:
+
+<Tabs>
+  <Tab title="ip-thc" icon="terminal">
+    Reverse DNS, subdomain, and CNAME lookups on 5.14B+ domains. No API key needed.
+
+    ```bash
+    go install github.com/haltman-io/ip-thc/cmd/ip-thc@latest
+    ```
+
+    ```bash
+    ip-thc -rdns -t 1.1.1.1
+    ip-thc -sub -t example.com --all
+    ip-thc -cn -t github.io
+    ```
+  </Tab>
+
+  <Tab title="search-leaks" icon="search">
+    Breach and infostealer exposure statistics. No API key needed.
+
+    ```bash
+    go install github.com/haltman-io/search-leaks/cmd/search-leaks@latest
+    ```
+
+    ```bash
+    search-leaks -t example.com
+    search-leaks -t user@example.com
+    ```
+  </Tab>
+
+  <Tab title="reverse-whois" icon="layers">
+    Reverse WHOIS enumeration. Requires WhoisXML API key.
+
+    ```bash
+    go install github.com/haltman-io/reverse-whois/cmd/reverse-whois@latest
+    ```
+
+    ```bash
+    reverse-whois --api-key YOUR_KEY -t example.com
+    ```
+  </Tab>
+
+  <Tab title="sub-alter" icon="git-branch">
+    Domain and subdomain discovery with wildcard filters. Requires WhoisXML API key.
+
+    ```bash
+    go install github.com/haltman-io/sub-alter/cmd/sub-alter@latest
+    ```
+
+    ```bash
+    sub-alter --api-key YOUR_KEY -di "*example.com*"
+    ```
+  </Tab>
+
+  <Tab title="brave-search" icon="globe">
+    URL extraction from Brave Search results. Requires Brave API key.
+
+    ```bash
+    go install github.com/haltman-io/brave-search/cmd/brave-search@latest
+    ```
+
+    ```bash
+    brave-search -ak "YOUR_KEY" -sq "site:example.com" --all
+    ```
+  </Tab>
+</Tabs>
+
+## Mail Forwarding — Quick Start
+
+Create a free email alias in seconds at [forward.haltman.io](https://forward.haltman.io):
+
+<Steps>
+  <Step title="Choose your alias" icon="edit-3">
+    Pick a handle, select a domain, and enter your destination email address.
+  </Step>
+
+  <Step title="Confirm via email" icon="mail">
+    Check your inbox for a confirmation link (anti-abuse measure).
+  </Step>
+
+  <Step title="Start receiving" icon="check-circle">
+    Emails sent to your alias are forwarded to your real inbox immediately.
+  </Step>
+</Steps>
+
+Or use the API directly via cURL:
+
+```bash
+curl 'https://mail.haltman.io/forward/subscribe?name=myalias&domain=fwd.haltman.io&to=you%40email.com'
+```
+
+## Self-Hosting — Overview
+
+The full stack consists of these components, deployed in order:
+
+| # | Component | Role |
+|---|-----------|------|
+| 1 | MariaDB | Domain and alias lookup backend |
+| 2 | DNS | MX, SPF, DMARC, PTR records |
+| 3 | PostSRSd | Sender Rewriting Scheme (SPF alignment) |
+| 4 | Postfix | SMTP engine and policy enforcement |
+| 5 | OpenDKIM | DKIM signing (optional, recommended) |
+| 6 | [mail-forwarding-api](/mail-forwarding-selfhost/mail-forwarding-api) | Node.js API for alias management |
+| 7 | [mail-forwarding-ui](/mail-forwarding-selfhost/mail-forwarding-ui) | Next.js frontend |
+
+<Callout kind="info">
+  Start with the [mail-forwarding-core](/mail-forwarding-selfhost/mail-forwarding-core) guide — it covers components 1–5 in a single document.
 </Callout>
 
-<Columns cols={2}>
-  <Card title="Authentication" icon="shield" href="/authentication">
-    Secure your spaces with API keys and webhooks.
+## Community & Support
+
+<Columns cols="3">
+  <Card title="GitHub" icon="github" href="https://github.com/haltman-io" horizontal>
+    Source code for all projects.
   </Card>
-  <Card title="Advanced Guides" icon="book-open" href="/introduction">
-    Explore full documentation features.
+  <Card title="Telegram" icon="message-circle" href="https://t.me/haltman_group" horizontal>
+    Community group for questions and feedback.
+  </Card>
+  <Card title="Email" icon="mail" href="mailto:root@haltman.io" horizontal>
+    Direct contact: root@haltman.io
   </Card>
 </Columns>

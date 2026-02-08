@@ -1,0 +1,184 @@
+---
+title: sub-alter
+description: >-
+  OSINT CLI tool to query a commercial Domains/Subdomains Discovery dataset and
+  enumerate domains and subdomains that match user-defined include/exclude patterns.
+---
+
+**sub-alter** is a production-grade OSINT command-line tool maintained by a **member of** [Haltman.io](https://haltman.io). It queries a **commercial domains/subdomains discovery dataset** to enumerate **domains and subdomains** that match **user-defined include/exclude patterns**.
+
+Typical use cases:
+
+- Brand and trademark monitoring
+- Vendor and third-party footprint discovery
+- Infrastructure mapping and OSINT enrichment
+- Security investigations requiring controlled enumeration
+
+<Frame>
+  <img src="https://github.com/haltman-io/sub-alter/raw/main/docs/screenshots/wildcard-domain-search.png" alt="sub-alter wildcard domain search" />
+</Frame>
+
+---
+
+## Installation
+
+### Requirements
+
+- **Go 1.22+**
+- Valid **Domains/Subdomains Discovery API key** (WhoisXML)
+
+<Tabs>
+  <Tab title="Build from source" icon="code">
+    ```bash
+    git clone https://github.com/haltman-io/sub-alter.git
+    cd sub-alter
+    go mod tidy
+    go build -o sub-alter ./cmd/sub-alter
+    ```
+
+    ```bash
+    ./sub-alter -h
+    ```
+  </Tab>
+
+  <Tab title="Install to $GOBIN" icon="download">
+    ```bash
+    go install github.com/haltman-io/sub-alter/cmd/sub-alter@latest
+    ```
+
+    ```bash
+    sub-alter -h
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+## Configuration
+
+### API key configuration (required)
+
+<Tabs>
+  <Tab title="CLI flag (highest priority)" icon="terminal">
+    ```bash
+    sub-alter --api-key YOUR_API_KEY -di "*example.com*"
+    ```
+  </Tab>
+
+  <Tab title="YAML config file (recommended)" icon="file-text">
+    On startup, the tool looks for a file **next to the executable**:
+
+    ```text
+    .sub-alter.yaml
+    ```
+
+    If it does not exist, it is created automatically:
+
+    ```yaml
+    api_keys: []
+    ```
+
+    Populate with one or more keys:
+
+    ```yaml
+    api_keys:
+      - KEY_1
+      - KEY_2
+    ```
+
+    Keys are **rotated round-robin per request**.
+  </Tab>
+</Tabs>
+
+---
+
+## Usage
+
+### Basic domain discovery
+
+```bash
+sub-alter -di "*example.com*"
+```
+
+Searches for **domains containing** `example.com` anywhere.
+
+### Domain include / exclude filters
+
+```bash
+sub-alter -di "example.com" -de "test.example.com"
+```
+
+<Callout kind="info">
+  **Maximum 4 items per include/exclude array** (provider constraint).
+</Callout>
+
+### Subdomain include / exclude filters
+
+```bash
+sub-alter -si "aws*" -se "*portal*" -se "*beta*"
+```
+
+Discover subdomains starting with `aws`, excluding portals and beta environments.
+
+<Frame>
+  <img src="https://github.com/haltman-io/sub-alter/raw/main/docs/screenshots/wildcard-subdomain-enum.png" alt="sub-alter wildcard subdomain enumeration" />
+</Frame>
+
+### Mixed filters (domains + subdomains)
+
+```bash
+sub-alter -di "google.com" -di "twitter.com" -se "*portal*"
+```
+
+### Output to file (clean & deduplicated)
+
+```bash
+sub-alter -di "*example.com*" -o results.txt
+```
+
+- File is **overwritten** if it exists
+- One domain per line
+- No ANSI colors
+- Deduplicated output
+
+---
+
+## Possible Problems / Important Notes
+
+### Provider limits
+
+- API hard limit: **30 requests per second**
+- The tool rejects values above this limit
+
+```bash
+sub-alter -di "*example.com*" -rl 10
+```
+
+### Include / exclude constraints
+
+Each include/exclude array supports **max 4 items**. Exceeding this causes the tool to exit with an error.
+
+### Proxy and TLS behavior
+
+Supported proxy schemes: `http://`, `https://`, `socks5://`
+
+```bash
+sub-alter -di "*example.com*" --proxy socks5://127.0.0.1:9050
+```
+
+<Callout kind="alert">
+  Use `--insecure/-k` **only in controlled lab environments**.
+</Callout>
+
+### API cost awareness
+
+- This provider may bill **per request**
+- The tool sends **only fields explicitly requested** via flags
+- Avoid unnecessary wildcard searches in large investigations
+
+---
+
+## External References
+
+- [Domains & Subdomains Discovery API (WhoisXML)](https://whoisxmlapi.com/)
+- [GitHub: haltman-io/sub-alter](https://github.com/haltman-io/sub-alter)

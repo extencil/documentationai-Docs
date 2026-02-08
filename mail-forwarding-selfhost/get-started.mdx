@@ -1,0 +1,63 @@
+---
+title: Get Started (Self-Hosting)
+description: >-
+  Introduction to self-hosting the complete mail forwarding stack.
+  Host and manage the service on your own infrastructure.
+---
+
+<Callout kind="info">
+  This is a guide for **self-hosting**. If you just want to use the service as an end user, see the [User guide](/mail-forwarding/get-started) instead.
+</Callout>
+
+## What is Self-Hosting?
+
+**Self-hosting** is the practice of hosting and managing your own services on infrastructure under your control — such as a VPS, dedicated server, or home server — rather than relying on third-party platforms.
+
+This gives you:
+
+- Greater **autonomy** and **privacy**
+- Full **data control**
+- Complete **customization**
+- Responsibility for maintenance, updates, and availability
+
+## Stack Overview
+
+The complete mail forwarding stack consists of these components, deployed in this order:
+
+| # | Component | Role | Guide |
+|---|-----------|------|-------|
+| 1 | MariaDB | Domain and alias lookup backend | [mail-forwarding-core](/mail-forwarding-selfhost/mail-forwarding-core) |
+| 2 | DNS | MX, SPF, DMARC, PTR records | [DNS Configuration](/mail-forwarding-selfhost/dns-configuration) |
+| 3 | PostSRSd | Sender Rewriting Scheme (SRS) | [mail-forwarding-core](/mail-forwarding-selfhost/mail-forwarding-core) |
+| 4 | Postfix | SMTP engine and policy enforcement | [mail-forwarding-core](/mail-forwarding-selfhost/mail-forwarding-core) |
+| 5 | OpenDKIM | DKIM signing (optional, recommended) | [mail-forwarding-core](/mail-forwarding-selfhost/mail-forwarding-core) |
+| 6 | Node.js API | HTTP endpoints for alias management | [mail-forwarding-api](/mail-forwarding-selfhost/mail-forwarding-api) |
+| 7 | Next.js UI | Web frontend for end users | [mail-forwarding-ui](/mail-forwarding-selfhost/mail-forwarding-ui) |
+
+<Callout kind="alert">
+  The installation order is **mandatory**. Components 1–5 are covered in the [mail-forwarding-core](/mail-forwarding-selfhost/mail-forwarding-core) guide. Installing out of order will cause misleading failures.
+</Callout>
+
+## Deployment Path
+
+<Steps>
+  <Step title="Deploy the core stack" icon="server">
+    Follow the [mail-forwarding-core](/mail-forwarding-selfhost/mail-forwarding-core) guide to set up MariaDB, DNS, PostSRSd, Postfix, and OpenDKIM.
+  </Step>
+
+  <Step title="Configure DNS for your domains" icon="globe">
+    Use the [DNS Configuration guide](/mail-forwarding-selfhost/dns-configuration) to properly set up PTR, MX, SPF, DMARC, and DKIM records.
+  </Step>
+
+  <Step title="Deploy the API" icon="code">
+    Follow the [mail-forwarding-api](/mail-forwarding-selfhost/mail-forwarding-api) guide to set up alias management endpoints.
+  </Step>
+
+  <Step title="Deploy the UI" icon="monitor">
+    Follow the [mail-forwarding-ui](/mail-forwarding-selfhost/mail-forwarding-ui) guide to deploy the Next.js frontend.
+  </Step>
+
+  <Step title="Optional: Set up cleanup cronjob" icon="clock">
+    Configure the [cleanup cronjob](/mail-forwarding-selfhost/cleanup-cronjob) to purge expired confirmation tokens.
+  </Step>
+</Steps>

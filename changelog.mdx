@@ -1,147 +1,69 @@
 ---
 title: Changelog
-description: Review the latest updates, improvements, and changes in Haltman to stay informed on new features.
+description: Release history and project updates for Haltman.io open-source tools and services.
 ---
 
 ## Changelog Overview
 
-Stay up to date with the latest releases of Haltman. This changelog highlights new features, improvements, bug fixes, and any breaking changes. You receive notifications for updates through your dashboard at `https://dashboard.example.com`.
+Track updates across all Haltman.io projects. This page covers new releases, tool improvements, and infrastructure changes.
 
-<Callout kind="info">
-  Check the [migration guides](#migration-guides) for breaking changes and upgrade your installation promptly to benefit from the latest security and performance enhancements.
+<Callout kind="tip">
+  Follow our [GitHub organization](https://github.com/haltman-io) for real-time release notifications and commit history.
 </Callout>
 
-<Update label="2024-10-15" description="v1.2.0" tags={["feature", "improvement"]}>
+<Update label="2025-01" description="Open Source Tools v1.0" tags={["feature"]}>
 
-## New Features
+## Open Source OSINT Tools — Initial Release
 
-- Added real-time collaboration for documentation pages, enabling multiple users to edit simultaneously.
-- Introduced version history with diff viewer to track changes over time.
+All five CLI tools released as stable v1.0:
 
-## Improvements
+- **ip-thc** — Reverse DNS, subdomain, and CNAME lookups via ip.thc.org (5.14B+ domains)
+- **search-leaks** — Credential exposure statistics via Hudson Rock OSINT
+- **reverse-whois** — Reverse WHOIS enumeration via WhoisXML API
+- **sub-alter** — Domain/subdomain discovery with wildcard pattern filters
+- **brave-search** — URL extraction from Brave Search API results
 
-- Enhanced search functionality with fuzzy matching and full-text indexing.
-- Optimized page load times by `>40%` through lazy loading components.
-
-## Bug Fixes
-
-- Fixed rendering issues with nested lists in markdown editor.
-- Resolved authentication token refresh problems during long sessions.
+All tools built with Go 1.22+, supporting rate limiting, proxy (HTTP/SOCKS5), and pipeline-friendly output.
 
 </Update>
 
-<Update label="2024-09-20" description="v1.1.0" tags={["feature", "bugfix"]}>
+<Update label="2025-01" description="Mail Forwarding Stack" tags={["feature"]}>
 
-## New Features
+## Mail Forwarding Service — Public Launch
 
-- Integrated webhook support for custom notifications on page updates.
-- Added export options for PDF and Markdown formats.
+Complete mail forwarding stack released and deployed at [forward.haltman.io](https://forward.haltman.io):
 
-## Bug Fixes
+- **mail-forwarding-core** — Postfix + MariaDB + PostSRSd + OpenDKIM
+- **mail-forwarding-api** — Node.js/Express API for alias management
+- **mail-forwarding-ui** — Next.js frontend with TailwindCSS and Radix UI
 
-- Corrected sidebar navigation collapse on mobile devices.
-- Patched potential XSS vulnerabilities in user-generated content.
-
-## Improvements
-
-- Upgraded editor with syntax highlighting for 20+ languages.
-
-</Update>
-
-<Update label="2024-08-10" description="v1.0.0" tags={["breaking", "feature"]}>
-
-## Initial Release
-
-- Core documentation workspace with page creation, organization, and sharing.
-- Full markdown editor with live preview.
-- User management and role-based access control.
-
-## Breaking Changes
-
-- Initial setup requires API key migration from beta endpoints.
+Key features:
+- Free alias creation with email confirmation (anti-abuse)
+- Custom domain/subdomain support
+- Rate limiting, anti-spoofing, SRS alignment
+- Full self-hosting documentation
 
 </Update>
 
-## Upgrade Process
-
-Follow these steps to upgrade Haltman to the latest version.
-
-<Steps>
-  <Step title="Backup Your Data" icon="database">
-
-  Create a full backup of your workspace.
-
-  ```
-  haltman backup --output=/path/to/backup
-  ```
-
-  </Step>
-  <Step title="Update Package" icon="download">
-
-  ```
-  npm install haltman@latest
-  ```
-
-  Or use your preferred package manager.
-
-  </Step>
-  <Step title="Run Migrations" icon="settings">
-
-  ```
-  haltman migrate
-  ```
-
-  Review any migration notes in the release.
-
-  </Step>
-  <Step title="Restart Service" icon="refresh-cw">
-
-  Restart your Haltman instance and verify functionality.
-
-  </Step>
-</Steps>
-
-## Migration Guides
-
-<ExpandableGroup>
-  <Expandable title="v1.2.0 Migration" default-open="true">
-
-  No breaking changes in this release. Simply run the upgrade steps above.
-
-  If you encounter issues with real-time collaboration, ensure your firewall allows WebSocket connections on port 443.
-
-  </Expandable>
-  <Expandable title="v1.1.0 Breaking Changes">
-
-  Webhook endpoints changed from `/v1/webhooks` to `/v2/webhooks`. Update your integrations accordingly.
-
-  ```javascript
-  // Old
-  fetch('https://api.example.com/v1/webhooks', { ... });
-
-  // New
-  fetch('https://api.example.com/v2/webhooks', { ... });
-  ```
-
-  </Expandable>
-</ExpandableGroup>
-
-## Upcoming Roadmap
-
-Explore planned features coming soon to Haltman.
+## Project Repositories
 
 <Columns cols={3}>
-  <Card title="AI Assistance" icon="zap" href="#">
-    Automated content suggestions and summaries powered by AI.
+  <Card title="ip-thc" icon="terminal" href="https://github.com/haltman-io/ip-thc" horizontal>
+    DNS intelligence CLI
   </Card>
-  <Card title="Advanced Analytics" icon="bar-chart-3" href="#">
-    Page views, edit history, and collaboration metrics.
+  <Card title="search-leaks" icon="search" href="https://github.com/haltman-io/search-leaks" horizontal>
+    Breach statistics CLI
   </Card>
-  <Card title="Enterprise Features" icon="shield" href="#">
-    SSO, audit logs, and self-hosted deployment options.
+  <Card title="reverse-whois" icon="layers" href="https://github.com/haltman-io/reverse-whois" horizontal>
+    Reverse WHOIS CLI
+  </Card>
+  <Card title="sub-alter" icon="git-branch" href="https://github.com/haltman-io/sub-alter" horizontal>
+    Domain discovery CLI
+  </Card>
+  <Card title="brave-search" icon="compass" href="https://github.com/haltman-io/brave-search" horizontal>
+    Brave Search CLI
+  </Card>
+  <Card title="mail-forwarding" icon="mail" href="https://github.com/haltman-io/mail-forwarding" horizontal>
+    Complete mail stack
   </Card>
 </Columns>
-
-<Callout kind="tip" title="Stay Informed">
-  Subscribe to updates at `https://dashboard.example.com/notifications` or follow our GitHub repository for release announcements.
-</Callout>

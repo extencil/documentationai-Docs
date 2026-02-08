@@ -1,118 +1,75 @@
 ---
-title: Introduction to Haltman
+title: Introduction
 description: >-
-  Discover Haltman, yours default documentation space for organizing and
-  managing project documentation with ease and efficiency.
+  Haltman.io is an open-source initiative focused on cybersecurity and privacy tooling.
+  Explore our knowledge base covering OSINT tools, mail forwarding, and self-hosting guides.
 ---
-<Callout kind="info" collapsed="false">
-  This documentation was generated as a starter kit template based on your brand. Please review and customize the content to accurately reflect your product's features, APIs, and capabilities.
-</Callout>
 
 ## Overview
 
-Haltman provides a centralized space for your project documentation. You can create, organize, and manage all your docs in one place, making it easy to collaborate and keep everything up to date. Whether you work on software projects, internal wikis, or technical guides, Haltman streamlines the process with intuitive tools and powerful organization features.
+Welcome to the **Haltman.io** knowledge base. Our goal is to document our open-source projects accurately and preserve this knowledge as practical, technical reference material.
 
-This platform supports version control, search, and role-based access, ensuring your documentation stays current and accessible. Start by exploring the key features below to see how Haltman fits your workflow.
+What you will find here:
 
-## Key Features
-
-Haltman offers essential tools to enhance your documentation experience.
+- **Open-source OSINT tools** — CLI tools written in Go for DNS intelligence, breach exposure, reverse WHOIS, subdomain discovery, and search automation.
+- **Free Mail Forwarding Service** — A public, abuse-aware mail forwarding service at [forward.haltman.io](https://forward.haltman.io), with user guides and full self-hosting documentation.
+- **Self-hosting guides** — Complete stack documentation (Postfix, MariaDB, PostSRSd, OpenDKIM, Node.js API, Next.js UI) so you can run everything on your own infrastructure.
 
 <Columns cols="3">
-  <Card title="Organized Spaces" href="#spaces" icon="folder" horizontal="false">
-    Create unlimited documentation spaces for different projects. Group related docs with folders and tags for quick access.
+  <Card title="Open Source Tools" href="/open-source/ip-thc" icon="terminal" horizontal="false">
+    OSINT and reconnaissance CLI tools for security professionals. All written in Go, no API keys required for most.
   </Card>
 
-  <Card title="Collaboration Tools" href="#collaboration" icon="users" horizontal="false">
-    Invite team members, set permissions, and track changes with version history. Real-time editing keeps everyone aligned.
+  <Card title="Mail Forwarding" href="/mail-forwarding/get-started" icon="mail" horizontal="false">
+    Free mail forwarding service. Create aliases, add your own domains, and manage everything via UI or cURL.
   </Card>
 
-  <Card title="Search and Navigation" href="#navigation" icon="search" horizontal="false">
-    Powerful full-text search finds content instantly. Breadcrumbs and sidebars make browsing effortless.
+  <Card title="Self-Hosting" href="/mail-forwarding-selfhost/get-started" icon="server" horizontal="false">
+    Full self-hosting documentation for the mail forwarding stack. Deploy on your own VPS with complete control.
   </Card>
 </Columns>
 
-<Callout kind="success" collapsed="false">
-  These features help you scale documentation from small projects to enterprise needs.
-</Callout>
-
-## Who Should Use Haltman
-
-Determine if Haltman matches your role with these common use cases.
+## Projects
 
 <Tabs>
-  <Tab title="Developers & Engineers" icon="code">
-    Document APIs, codebases, and deployment guides. Embed code snippets and integrate with Git for automatic updates.
+  <Tab title="OSINT Tools" icon="search">
+    All tools are written in **Go 1.22+**, designed for speed, explicit control, and pipeline-friendly output.
+
+    | Tool | Description |
+    |------|-------------|
+    | [ip-thc](/open-source/ip-thc) | Reverse DNS, subdomain, and CNAME lookups via ip.thc.org (5.14B+ domains) |
+    | [search-leaks](/open-source/search-leaks) | Credential exposure statistics via Hudson Rock OSINT |
+    | [reverse-whois](/open-source/reverse-whois) | Reverse WHOIS enumeration via WhoisXML API |
+    | [sub-alter](/open-source/sub-alter) | Domain/subdomain discovery with wildcard pattern filters |
+    | [brave-search](/open-source/brave-search) | URL extraction from Brave Search API results |
   </Tab>
 
-  <Tab title="Product Teams" icon="package">
-    Maintain user guides, changelogs, and feature specs. Use visual components like diagrams for clear explanations.
-  </Tab>
+  <Tab title="Mail Forwarding" icon="mail">
+    A complete, free, public mail forwarding service with abuse protection and email confirmation.
 
-  <Tab title="Freelancers & Small Teams" icon="user">
-    Manage client projects without complex setups. Export docs to PDF or share public links easily.
+    | Component | Description |
+    |-----------|-------------|
+    | [mail-forwarding-core](/mail-forwarding-selfhost/mail-forwarding-core) | Postfix + MariaDB + PostSRSd + OpenDKIM |
+    | [mail-forwarding-api](/mail-forwarding-selfhost/mail-forwarding-api) | Node.js/Express API for alias management |
+    | [mail-forwarding-ui](/mail-forwarding-selfhost/mail-forwarding-ui) | Next.js frontend for end users |
   </Tab>
 </Tabs>
 
-## Quick Start
+## Links
 
-Get up and running with Haltman in minutes.
-
-<Steps>
-  <Step title="Create Account" icon="user-plus" title-type="p">
-    Visit `https://app.haltman.com` and sign up with your email. Verify your account to unlock full features.
-  </Step>
-
-  <Step title="Set Up Space" icon="folder-plus" title-type="p">
-    Create your first documentation space. Add a name like "My Project Docs" and invite collaborators.
-  </Step>
-
-  <Step title="Add Content" icon="edit-3" title-type="p">
-    Start a new page with Markdown or our visual editor. Use components like `<Callout>` for highlights.
-
-    ```markdown
-    # Welcome Page
-
-    Welcome to your project!
-    ```
-  </Step>
-
-  <Step title="Publish & Share" icon="share-2" title-type="p">
-    Make pages public or share private links. Set up webhooks for notifications on updates.
-  </Step>
-</Steps>
-
-## Navigation Guide
-
-Learn how to move around the documentation effectively.
-
-<ExpandableGroup>
-  <Expandable title="Sidebar Menu" default-open="true">
-    The left sidebar shows spaces and pages. Use the search bar at the top for quick jumps. Click the `+` icon to add new content.
-  </Expandable>
-
-  <Expandable title="Page Tools" default-open="false">
-    Each page has edit, history, and export buttons in the top-right. Use `@mentions` to notify team members.
-  </Expandable>
-
-  <Expandable title="Advanced Search" default-open="false">
-    Filter by tags, spaces, or date. Advanced queries support boolean operators like `docs AND api`.
-  </Expandable>
-</ExpandableGroup>
-
-## Next Steps
-
-<Columns cols="2">
-  <Card title="Quickstart Guide" href="/quickstart" icon="zap" horizontal="false">
-    Dive into detailed setup instructions and your first project.
+<Columns cols="3">
+  <Card title="Website" icon="globe" href="https://www.haltman.io/" horizontal>
+    www.haltman.io
   </Card>
-
-  <Card title="Authentication" href="/authentication" icon="shield" horizontal="false">
-    Secure your spaces with API keys and user management.
+  <Card title="GitHub" icon="github" href="https://github.com/haltman-io" horizontal>
+    github.com/haltman-io
+  </Card>
+  <Card title="Telegram" icon="message-circle" href="https://t.me/haltman_group" horizontal>
+    t.me/haltman_group
   </Card>
 </Columns>
 
 <Callout kind="tip" collapsed="false">
-  Explore the quickstart next to build your first documentation space.
+  Browse the sidebar to explore specific sections, or start with the [Quickstart](/quickstart) for a guided overview.
 </Callout>
 

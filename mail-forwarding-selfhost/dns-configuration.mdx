@@ -1,0 +1,148 @@
+---
+title: DNS Configuration
+description: >-
+  How to correctly configure DNS for domains and subdomains that will use
+  the mail forwarding service. Includes PTR, MX, SPF, DMARC, and database authorization.
+---
+
+This guide explains **how to correctly configure DNS** for domains or subdomains that will use the **Mail Forwarding Service**, so they can be:
+
+- Accepted by Postfix
+- Authorized in the database (`domain` table)
+- Used by the API and UI
+
+<Callout kind="alert">
+  **DNS must be configured before inserting the domain into the database.** If DNS is wrong, mail delivery, forwarding, SPF, or DMARC will fail.
+</Callout>
+
+---
+
+## Step 1 — PTR / Reverse DNS (mandatory)
+
+PTR (reverse DNS) **must be configured first**, directly at your VPS or hosting provider.
+
+### Generic model
+
+```
+IPv4  ->  mail.your-domain.tld
+IPv6  ->  mail.your-domain.tld
+
+mail.your-domain.tld  ->  IPv4
+mail.your-domain.tld  ->  IPv6
+```
+
+### Real example (current setup)
+
+```
+PTR: 161.97.146.91              -> mail.abin.lat
+PTR: 2a02:c207:2298:1997::1     -> mail.abin.lat
+
+mail.abin.lat -> 161.97.146.91
+mail.abin.lat -> 2a02:c207:2298:1997::1
+```
+
+<Callout kind="info">
+  PTR is **not** configured in Cloudflare or normal DNS panels. It must be set at your VPS/hosting provider. PTR must match the hostname used by Postfix (`myhostname`). Missing or mismatched PTR is the **#1 reason** for outbound mail rejection.
+</Callout>
+
+---
+
+## Step 2 — DNS records for a domain
+
+**Example domain:** `example.com`
+**Mail host:** `mail.abin.lat`
+
+### Required records
+
+| Type | Name | Content | Priority |
+|------|------|---------|----------|
+| MX | @ | mail.abin.lat | 10 |
+
+### SPF (recommended)
+
+```bash
+example.com TXT "v=spf1 ip4:<YOUR_IPV4> ip6:<YOUR_IPV6> -all"
+```
+
+Example:
+
+```bash
+example.com TXT "v=spf1 ip4:161.97.146.91 ip6:2a02:c207:2298:1997::1 -all"
+```
+
+### DMARC (recommended)
+
+```bash
+_dmarc.example.com TXT "v=DMARC1; p=none; rua=mailto:dmarc@example.com; fo=1"
+```
+
+---
+
+## Step 3 — DNS records for a subdomain
+
+**Example subdomain:** `sub.example.com`
+**Mail host:** `mail.abin.lat`
+
+### Required records
+
+| Type | Name | Content | Priority |
+|------|------|---------|----------|
+| MX | sub | mail.abin.lat | 10 |
+
+### SPF
+
+```bash
+sub.example.com TXT "v=spf1 ip4:<YOUR_IPV4> ip6:<YOUR_IPV6> -all"
+```
+
+### DMARC
+
+```bash
+_dmarc.sub.example.com TXT "v=DMARC1; p=none"
+```
+
+---
+
+## Step 4 — Authorize the domain in the database
+
+After DNS is **fully propagated**, insert the domain (or subdomain) into the `domain` table:
+
+```sql
+INSERT INTO domain (name, active) VALUES ('example.com', 1);
+```
+
+For subdomains:
+
+```sql
+INSERT INTO domain (name, active) VALUES ('sub.example.com', 1);
+```
+
+Once inserted:
+- Postfix will accept mail for the domain
+- The API can create aliases
+- The UI can expose the domain
+
+---
+
+## Common Mistakes
+
+| Mistake | Impact |
+|---------|--------|
+| PTR missing or wrong | Outbound mail rejected |
+| MX pointing to wrong host | Mail never reaches your server |
+| SPF not matching server IP | Forwarded mail may fail DMARC |
+| Domain added to DB before DNS | Mail will fail even if alias exists |
+| Using hostname without A/AAAA | Postfix cannot identify itself correctly |
+
+---
+
+## Summary Checklist
+
+Before adding a domain to the database:
+
+- PTR → `mail.your-domain.tld`
+- `mail.your-domain.tld` → A / AAAA records
+- MX → `mail.your-domain.tld`
+- SPF includes server IP(s)
+- DMARC present (at least `p=none`)
+- Domain inserted into `domain` table

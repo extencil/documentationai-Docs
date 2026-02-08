@@ -1,0 +1,51 @@
+---
+title: Get Started (User)
+description: >-
+  Introduction to the free mail forwarding service at forward.haltman.io.
+  This guide is for end users who want to create and manage email aliases.
+---
+
+<Callout kind="info">
+  This is a guide for **users**. If you want to self-host the mail forwarding stack on your own server, see the [Self-Hosting guide](/mail-forwarding-selfhost/get-started) instead.
+</Callout>
+
+## What is Mail Forwarding?
+
+The free mail forwarding service at [forward.haltman.io](https://forward.haltman.io) lets you create **email aliases** that forward messages to your real inbox. No account or password required — just confirm ownership of your destination email.
+
+## How it works
+
+<Steps>
+  <Step title="Choose your alias" icon="edit-3">
+    Pick a handle (e.g., `myname`) and select an available domain (e.g., `fwd.haltman.io`). Your alias becomes `myname@fwd.haltman.io`.
+  </Step>
+
+  <Step title="Enter your destination" icon="mail">
+    Provide the real email address where forwarded messages should be delivered.
+  </Step>
+
+  <Step title="Confirm via email" icon="check-circle">
+    A confirmation link is sent to your destination email (anti-abuse). Click it to activate the alias.
+  </Step>
+
+  <Step title="Start receiving" icon="inbox">
+    Any email sent to your alias is forwarded to your real inbox immediately.
+  </Step>
+</Steps>
+
+## Available guides
+
+<Columns cols={2}>
+  <Card title="Create Alias (UI)" icon="monitor" href="/mail-forwarding/create-alias-ui">
+    Step-by-step with the web interface.
+  </Card>
+  <Card title="Create Alias (cURL)" icon="terminal" href="/mail-forwarding/create-alias-curl">
+    Create aliases via command line.
+  </Card>
+  <Card title="Remove Alias" icon="trash-2" href="/mail-forwarding/remove-alias">
+    How to delete an existing alias.
+  </Card>
+  <Card title="Add Your Domain" icon="globe" href="/mail-forwarding/add-domain">
+    Use your own domain with the service.
+  </Card>
+</Columns>

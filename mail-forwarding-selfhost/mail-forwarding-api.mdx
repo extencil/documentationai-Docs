@@ -1,0 +1,200 @@
+---
+title: mail-forwarding-api
+description: >-
+  Node.js + Express API to manage mail forwarding aliases. Handles subscribe,
+  confirm, unsubscribe operations with rate limiting and email confirmation.
+---
+
+**mail-forwarding-api** is a **Node.js/Express** service maintained by a **member of** [Haltman.io](https://haltman.io). It exposes HTTP endpoints that allow users to:
+
+- Request alias creation (**subscribe**)
+- Confirm alias creation via email token (**confirm**)
+- Request alias removal (**unsubscribe**)
+- Confirm alias removal via email token (**unsubscribe confirm**)
+
+Key points:
+
+- This API **does not receive emails**
+- It only **manages forwarding rules (aliases)** by writing into the **same MariaDB database used by the core stack**
+- All operations are **rate-limited**, **abuse-resistant**, and **confirmed via email tokens**
+
+<Callout kind="alert">
+  This API **does not work standalone**. You must deploy the [mail-forwarding-core](/mail-forwarding-selfhost/mail-forwarding-core) stack first (Postfix + MariaDB + PostSRSd).
+</Callout>
+
+---
+
+## Installation
+
+### Requirements
+
+- Node.js (current LTS recommended)
+- A running core stack (MariaDB reachable with correct schema)
+- Working SMTP credentials (required for confirmation emails)
+- Redis (optional, recommended for production rate limiting)
+
+### Install
+
+```bash
+git clone https://github.com/haltman-io/mail-forwarding
+cd ./mail-forwarding/mail-forwarding-api/app/
+npm install
+```
+
+---
+
+## Configuration
+
+### Create `.env`
+
+```bash
+cp .env.example .env
+```
+
+### Minimal required settings
+
+<Tabs>
+  <Tab title="Application" icon="settings">
+    ```bash
+    APP_ENV=prod
+    APP_PORT=3000
+    TRUST_PROXY=1
+    APP_PUBLIC_URL=https://api.example.org
+    EMAIL_CONFIRM_CONFIRM_ENDPOINT=/forward/confirm
+    ```
+
+    - `TRUST_PROXY` must reflect how many reverse proxies are in front of the API (affects IP-based rate limiting)
+    - `APP_PUBLIC_URL` is used to build confirmation links
+  </Tab>
+
+  <Tab title="MariaDB" icon="database">
+    ```bash
+    MARIADB_HOST=127.0.0.1
+    MARIADB_PORT=3306
+    MARIADB_USER=...
+    MARIADB_PASSWORD=...
+    MARIADB_DATABASE=...
+    ```
+
+    These **must point to the same database used by the core stack**.
+  </Tab>
+
+  <Tab title="SMTP" icon="mail">
+    ```bash
+    SMTP_HOST=...
+    SMTP_PORT=587
+    SMTP_SECURE=false
+    SMTP_AUTH_ENABLED=true
+    SMTP_USER=...
+    SMTP_PASS=...
+    SMTP_FROM="Mail Forwarding <no-reply@example.org>"
+    SMTP_TLS_REJECT_UNAUTHORIZED=true
+    ```
+
+    Without SMTP, confirmation emails will not be sent and the service is unusable.
+  </Tab>
+
+  <Tab title="Tokens" icon="key">
+    ```bash
+    EMAIL_CONFIRMATION_TTL_MINUTES=10
+    EMAIL_CONFIRMATION_RESEND_COOLDOWN_SECONDS=60
+    EMAIL_CONFIRMATION_TOKEN_LEN=12
+    ```
+  </Tab>
+
+  <Tab title="Redis (optional)" icon="server">
+    ```bash
+    REDIS_URL=redis://127.0.0.1:6379
+    REDIS_RATE_LIMIT_PREFIX=rl:
+    REDIS_CONNECT_TIMEOUT_MS=5000
+    ```
+
+    If `REDIS_URL` is empty, rate limiting uses in-memory storage (not shared across instances).
+  </Tab>
+</Tabs>
+
+Optional but recommended:
+
+```bash
+DEFAULT_ALIAS_DOMAIN=example.org
+```
+
+---
+
+## Running
+
+```bash
+node ./source/server.js
+```
+
+Optional with PM2:
+
+```bash
+pm2 start ./source/server.js --name mail-forwarding-api --no-daemon
+```
+
+---
+
+## HTTP Endpoints
+
+<Callout kind="info">
+  All endpoints are **GET-only**. All inputs are **query parameters**. No JSON body / POST is used.
+</Callout>
+
+### 1) Create alias request
+
+```http
+GET /forward/subscribe?name={handle}&to={destination}&domain={domain}
+```
+
+<ParamField query="name" param-type="string" required="true">
+  Alias local-part (e.g., `github`)
+</ParamField>
+
+<ParamField query="to" param-type="string" required="true">
+  Destination mailbox (e.g., `user@gmail.com`)
+</ParamField>
+
+<ParamField query="domain" param-type="string" required="false">
+  Alias domain. Defaults to `DEFAULT_ALIAS_DOMAIN`.
+</ParamField>
+
+Responses: `200 ok`, `400 invalid_input`, `409 alias_taken`, `429 rate_limited`, `403 banned`
+
+### 2) Confirm alias creation
+
+```http
+GET /forward/confirm?token={token}
+```
+
+Responses: `200 confirmed`, `400 invalid_token`, `404 token_not_found`, `410 token_expired`, `429 rate_limited`
+
+### 3) Remove alias request
+
+```http
+GET /forward/unsubscribe?alias={full_alias_address}
+```
+
+<ParamField query="alias" param-type="string" required="true">
+  Full alias address (e.g., `github@example.org`)
+</ParamField>
+
+Responses: `200 ok`, `404 not_found`, `429 rate_limited`, `403 banned`
+
+### 4) Confirm alias removal
+
+```http
+GET /forward/confirm?token={token}
+```
+
+Responses: `200 removed`, `400 invalid_token`, `404 token_not_found`, `410 token_expired`, `429 rate_limited`
+
+---
+
+## Possible Problems / Important Notes
+
+- **Core stack not deployed**: API may start, but operations will fail (missing schema / wrong DB)
+- **SMTP misconfigured**: subscribe/unsubscribe will not complete (no confirmation emails)
+- **Behind proxy without TRUST_PROXY**: rate limiting may treat all users as the same IP
+- **No Redis in production**: multi-instance deployments will have inconsistent rate limiting
+- **Destructive behavior**: this service writes directly into mail routing tables — test in staging first

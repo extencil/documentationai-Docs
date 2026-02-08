@@ -1,0 +1,217 @@
+---
+title: brave-search
+description: >-
+  CLI tool for cybersecurity workflows that queries Brave Search API and
+  extracts URLs from the results. Clean output, pagination support, rate
+  limiting, retries, proxy support (HTTP / SOCKS5).
+---
+
+**brave-search** is a modern, Linux-first command-line tool maintained by a **member of** [Haltman.io](https://haltman.io). It queries the **Brave Search API** and extracts **URLs only**, producing clean, pipeline-friendly output for cybersecurity workflows.
+
+Typical use cases:
+
+- OSINT URL collection
+- Recon pipelines (seed URLs for crawlers/scanners)
+- Brand and domain footprint discovery
+- Automated search-driven enrichment
+
+<Frame>
+  <img src="https://github.com/haltman-io/brave-search/raw/main/docs/screenshots/basic-run.png" alt="brave-search help menu" />
+</Frame>
+
+---
+
+## Installation
+
+### Requirements
+
+- **Go 1.22+**
+- Valid **Brave Search API key**
+
+<Tabs>
+  <Tab title="Build from source" icon="code">
+    ```bash
+    git clone https://github.com/haltman-io/brave-search.git
+    cd brave-search
+    go build -o brave-search ./cmd/brave-search
+    ```
+
+    ```bash
+    ./brave-search -h
+    ```
+  </Tab>
+
+  <Tab title="Install to $GOBIN" icon="download">
+    ```bash
+    go install github.com/haltman-io/brave-search/cmd/brave-search@latest
+    ```
+
+    ```bash
+    brave-search -h
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+## Configuration
+
+### API key configuration (required)
+
+<Tabs>
+  <Tab title="CLI flag (highest priority)" icon="terminal">
+    ```bash
+    brave-search -ak "YOUR_API_KEY" -sq "site:example.com"
+    ```
+  </Tab>
+
+  <Tab title="YAML config file (recommended)" icon="file-text">
+    On first run, the tool ensures a config file exists **next to the executable**:
+
+    ```text
+    .brave-search.yaml
+    ```
+
+    Initial structure:
+
+    ```yaml
+    api_keys: []
+    ```
+
+    Add one or more keys:
+
+    ```yaml
+    api_keys:
+      - "KEY_1"
+      - "KEY_2"
+    ```
+
+    Keys are **rotated per request**.
+  </Tab>
+</Tabs>
+
+---
+
+## Usage
+
+### Basic search
+
+```bash
+brave-search -sq "site:thc.org" --debug --all
+```
+
+<Frame>
+  <img src="https://github.com/haltman-io/brave-search/raw/main/docs/screenshots/run-search-debug.png" alt="brave-search debug run" />
+</Frame>
+
+### Multiple queries
+
+Comma-separated:
+
+```bash
+brave-search -sq "site:example.com,site:example.org"
+```
+
+Repeatable flags:
+
+```bash
+brave-search -sq "site:example.com" -sq "site:example.org"
+```
+
+From file:
+
+```bash
+brave-search -sqf queries.txt
+```
+
+From stdin (explicit):
+
+```bash
+cat queries.txt | brave-search --stdin
+```
+
+---
+
+### Pagination
+
+Manual page control:
+
+```bash
+brave-search -sq "site:example.com" --count 20 --page 0
+```
+
+Auto-pagination (recommended):
+
+```bash
+brave-search -sq "site:example.com" --all
+```
+
+### Output to file (sorted & deduplicated)
+
+```bash
+brave-search -sq "site:example.com" --all -o urls.txt
+```
+
+- Results are **sorted and deduplicated**
+- One URL per line
+- File is **overwritten** if it exists
+
+---
+
+### Proxy and TLS usage
+
+HTTP proxy + TLS bypass (common with Burp/ZAP):
+
+```bash
+brave-search -sq "site:example.com" --proxy http://127.0.0.1:8080 -k
+```
+
+SOCKS5 proxy:
+
+```bash
+brave-search -sq "site:example.com" --proxy socks5://127.0.0.1:9050
+```
+
+---
+
+## Possible Problems / Important Notes
+
+### Rate limits
+
+- Default tool limit: **5 requests/second**
+- Brave API tiers may enforce stricter limits (e.g., **1 rps**)
+
+If you see `429 RATE_LIMITED`:
+
+```bash
+brave-search -sq "site:example.com" --rate-limit 1
+```
+
+Increase retry wait time:
+
+```bash
+brave-search -sq "site:example.com" --retry-wait-time 5s
+```
+
+### Retries and failures
+
+- Default retries: **3**
+- If retries are exhausted, the tool exits with a **fatal error** (intentional to avoid silent data loss)
+
+### STDIN behavior
+
+- Reading from stdin is **disabled by default**
+- You must explicitly enable it with `--stdin`
+
+### TLS bypass warning
+
+<Callout kind="alert">
+  `brave-search -k` disables TLS verification. Use **only in controlled lab environments** where MITM visibility is expected.
+</Callout>
+
+---
+
+## External References
+
+- [Brave Search API documentation](https://brave.com/search/api/)
+- [GitHub: haltman-io/brave-search](https://github.com/haltman-io/brave-search)

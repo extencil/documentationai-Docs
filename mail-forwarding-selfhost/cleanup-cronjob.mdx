@@ -1,0 +1,144 @@
+---
+title: Cleanup Cronjob
+description: >-
+  Optional maintenance cronjob to purge expired email confirmation records
+  from the database.
+---
+
+This is an **optional maintenance cronjob** maintained by a **member of** [Haltman.io](https://haltman.io). Its only purpose is to keep the database clean by deleting expired and old records from the `email_confirmations` table used by the API confirmation workflow.
+
+Key guarantees:
+
+- **Only** the `email_confirmations` table is touched
+- No mail routing tables (domains/aliases) are modified
+- Safe to run repeatedly (idempotent)
+- Prevents long-term accumulation of sensitive/temporary token state
+
+---
+
+## Deletion Rules
+
+| Condition | Rule |
+|-----------|------|
+| Pending confirmations | `status = 'pending'` AND `expires_at < NOW(6)` |
+| Finalized confirmations | `status IN ('confirmed', 'expired')` AND `created_at < NOW(6) - INTERVAL 7 DAY` |
+
+No other tables are accessed.
+
+---
+
+## Installation
+
+### 1) Create the cleanup script
+
+```bash
+sudo tee /usr/local/bin/cleanup_email_confirmations.sh >/dev/null <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+CNF_FILE="${1:-}"
+if [[ -z "${CNF_FILE}" ]]; then
+  echo "[ERR] Missing CNF file path argument."
+  echo "Usage: $0 /path/to/db.cnf"
+  exit 2
+fi
+
+if [[ ! -f "${CNF_FILE}" ]]; then
+  echo "[ERR] CNF file not found: ${CNF_FILE}"
+  exit 2
+fi
+
+LOG_FILE="/var/log/forward/cleanup_email_confirmations.log"
+LOCK_FILE="/var/lock/cleanup_email_confirmations.lock"
+
+mkdir -p "$(dirname "${LOG_FILE}")"
+
+echo "[$(date -Is)] [INF] Cleanup script invoked (cnf=${CNF_FILE})" >> "${LOG_FILE}"
+
+exec 9>"${LOCK_FILE}"
+if ! flock -n 9; then
+  echo "[$(date -Is)] [WRN] Another cleanup is running. Exiting." >> "${LOG_FILE}"
+  exit 0
+fi
+
+SQL="$(cat <<'SQL'
+DELETE FROM email_confirmations
+WHERE (status = 'pending' AND expires_at < NOW(6))
+   OR (status IN ('confirmed','expired') AND created_at < (NOW(6) - INTERVAL 7 DAY));
+SQL
+)"
+
+OUT="$(mysql --defaults-extra-file="${CNF_FILE}" --batch --raw --silent -e "${SQL}" 2>&1)" || {
+  echo "[$(date -Is)] [ERR] mysql failed: ${OUT}" >> "${LOG_FILE}"
+  exit 1
+}
+
+echo "[$(date -Is)] [INF] mysql output: ${OUT}" >> "${LOG_FILE}"
+echo "[$(date -Is)] [INF] Cleanup done." >> "${LOG_FILE}"
+EOF
+```
+
+Make it executable:
+
+```bash
+sudo chmod 755 /usr/local/bin/cleanup_email_confirmations.sh
+```
+
+---
+
+## Configuration
+
+### Create a MySQL client CNF file
+
+Credentials are not embedded in the script:
+
+```bash
+sudo mkdir -p /etc/haltman
+sudo tee /etc/haltman/forward-db.cnf >/dev/null <<'EOF'
+[client]
+host=127.0.0.1
+user=mailuser
+password=YOUR_PASSWORD_HERE
+database=maildb
+EOF
+```
+
+Lock down permissions:
+
+```bash
+sudo chown root:root /etc/haltman/forward-db.cnf
+sudo chmod 600 /etc/haltman/forward-db.cnf
+```
+
+---
+
+## How to Use
+
+### Manual run (validate before cron)
+
+```bash
+sudo /usr/local/bin/cleanup_email_confirmations.sh /etc/haltman/forward-db.cnf
+```
+
+Check logs:
+
+```bash
+sudo tail -n 50 /var/log/forward/cleanup_email_confirmations.log
+```
+
+### Cron setup (example)
+
+Run every 10 minutes:
+
+```bash
+*/10 * * * * /usr/local/bin/cleanup_email_confirmations.sh /etc/haltman/forward-db.cnf
+```
+
+---
+
+## Possible Problems / Important Notes
+
+- **Credentials file missing or wrong permissions**: script exits with error
+- **Overlapping executions**: prevented by `flock`; concurrent runs log a warning and exit cleanly
+- **Log path**: `/var/log/forward/cleanup_email_confirmations.log` (script creates directory if needed)
+- **Use absolute paths in cron** and avoid relying on environment variables

@@ -1,0 +1,233 @@
+---
+title: reverse-whois
+description: >-
+  Golang CLI tool to perform Reverse WHOIS queries and enumerate domains whose
+  WHOIS records contain specific search terms. Uses WhoisXML API.
+---
+
+**reverse-whois** is a production-grade command-line tool maintained by a **member of** [Haltman.io](https://haltman.io) to perform **Reverse WHOIS** queries using a commercial WHOIS data provider (WhoisXML API).
+
+The tool allows analysts to start from a **search term** (brand, organization name, email fragment, unique string, etc.) and enumerate **domains whose WHOIS records contain that term**, across:
+
+- **Current WHOIS records**
+- **Historic WHOIS records** (optional)
+
+Typical use cases:
+
+- Threat intelligence investigations
+- Brand and vendor footprint discovery
+- OSINT enrichment
+- M&A, legal, and compliance due diligence
+- Infrastructure attribution and clustering
+
+<Frame>
+  <img src="https://github.com/haltman-io/reverse-whois/raw/main/docs/screenshots/basic-run.png" alt="reverse-whois basic usage" />
+</Frame>
+
+---
+
+## Installation
+
+### Requirements
+
+- **Go 1.22+**
+- Valid **WhoisXML API key**
+
+<Tabs>
+  <Tab title="Build from source" icon="code">
+    ```bash
+    git clone https://github.com/haltman-io/reverse-whois.git
+    cd reverse-whois
+    go mod tidy
+    go build -o reverse-whois ./cmd/reverse-whois
+    ```
+
+    ```bash
+    ./reverse-whois -h
+    ```
+  </Tab>
+
+  <Tab title="Install to $GOBIN" icon="download">
+    ```bash
+    go install github.com/haltman-io/reverse-whois/cmd/reverse-whois@latest
+    ```
+
+    ```bash
+    reverse-whois -h
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+## Configuration
+
+### API key configuration (required)
+
+This tool **requires an API key** from WhoisXML.
+
+<Tabs>
+  <Tab title="CLI flag (highest priority)" icon="terminal">
+    ```bash
+    reverse-whois --api-key YOUR_API_KEY -t example.com
+    ```
+  </Tab>
+
+  <Tab title="YAML config file (recommended)" icon="file-text">
+    On first run, the tool looks for a file **next to the executable**:
+
+    ```text
+    .reverse-whois.yaml
+    ```
+
+    If it does not exist, it is created automatically:
+
+    ```yaml
+    api_keys: []
+    ```
+
+    Populate it with one or more keys:
+
+    ```yaml
+    api_keys:
+      - KEY_1
+      - KEY_2
+    ```
+
+    If multiple keys are present, the tool **rotates keys round-robin per request**.
+  </Tab>
+</Tabs>
+
+---
+
+## Usage
+
+### Basic usage (current WHOIS, purchase mode)
+
+```bash
+reverse-whois -t example.com
+```
+
+Performs `searchType = current` with `mode = purchase` (default).
+
+### Historic WHOIS search
+
+```bash
+reverse-whois -t example.com --history
+```
+
+Use when you need to identify **previously registered or transferred domains**.
+
+### Preview mode (count only)
+
+Returns **only the number of matching domains**, without listing them:
+
+```bash
+reverse-whois -t example.com --preview
+```
+
+Output example:
+
+```text
+[example.com] [preview] [current] [domainsCount: 42]
+```
+
+---
+
+### Target input methods
+
+Supported input sources:
+
+- `--target / -t` (repeatable, comma-separated)
+- `--target-list / -tL` (files with one term per line)
+- `stdin` / pipeline
+
+```bash
+reverse-whois -t example.com,corp-name
+```
+
+```bash
+reverse-whois -tL targets.txt
+```
+
+```bash
+cat targets.txt | reverse-whois
+```
+
+---
+
+### Excluding terms
+
+Exclude up to **4 terms** from the results (API constraint):
+
+```bash
+reverse-whois -t example.com -e freeexample.org
+```
+
+```bash
+reverse-whois -t example.com -e a,b,c,d
+```
+
+If more than 4 exclude terms are provided, the tool exits with an error.
+
+### Output to file
+
+```bash
+reverse-whois -t example.com --output results.txt
+```
+
+- File is **overwritten** if it exists
+- No ANSI colors
+- Deduplicated results
+- Purchase mode: **one domain per line**
+- Preview mode: `term<TAB>count`
+
+---
+
+## Possible Problems / Important Notes
+
+### API rate limits
+
+- Hard provider limit: **30 requests/second**
+- Tool enforces this limit and rejects higher values
+
+```bash
+reverse-whois -t example.com -rl 10
+```
+
+### Concurrency behavior
+
+- `--threads` controls worker count
+- `--rate-limit` is **global**, not per-thread
+
+```bash
+reverse-whois -t example.com --threads 5 -rl 10
+```
+
+### Proxy and TLS handling
+
+Supported proxies: `http://`, `https://`, `socks5://`
+
+```bash
+reverse-whois -t example.com --proxy socks5://127.0.0.1:9050
+```
+
+<Callout kind="alert">
+  Use `--insecure/-k` **only in controlled lab environments**.
+</Callout>
+
+### Common API errors
+
+| Code | Meaning |
+|------|---------|
+| `401 Unauthorized` | Invalid or missing API key |
+| `403 Forbidden` | Account or credit issue |
+| `429 Too Many Requests` | Rate limit exceeded |
+| `422 Unprocessable Entity` | Invalid search term |
+
+---
+
+## External References
+
+- [WhoisXML Reverse WHOIS API](https://whoisxmlapi.com/)
+- [GitHub: haltman-io/reverse-whois](https://github.com/haltman-io/reverse-whois)

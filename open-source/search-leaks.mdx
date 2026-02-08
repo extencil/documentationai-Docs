@@ -1,0 +1,208 @@
+---
+title: search-leaks
+description: >-
+  OSINT CLI tool to query data breach/leak statistics by domain or email using
+  public threat-intel APIs. Supports stdin and target lists, automatic type
+  detection, forced modes, and structured output.
+---
+
+**search-leaks** is an open-source, OSINT-focused command-line tool maintained by a **member of** [Haltman.io](https://haltman.io). It queries **public threat-intelligence endpoints from Hudson Rock (Cavalier OSINT)** to retrieve **statistical indicators** related to data leaks, credential exposure, and infostealer activity.
+
+The tool consumes **statistical JSON responses only** and prints structured, greppable output suitable for reports, internal reviews, and automated pipelines.
+
+Typical use cases:
+
+- Vendor and third-party risk assessment
+- Corporate exposure checks (domain-level)
+- Mailbox exposure validation during incident response
+- High-level breach risk reporting without handling raw stolen data
+
+<Frame>
+  <img src="https://github.com/haltman-io/search-leaks/raw/main/docs/screenshots/basic-run.png" alt="search-leaks basic usage" />
+</Frame>
+
+---
+
+## Installation
+
+### Requirements
+
+- **Go 1.22+**
+- Network access to [cavalier.hudsonrock.com](https://cavalier.hudsonrock.com)
+
+<Tabs>
+  <Tab title="Build from source" icon="code">
+    ```bash
+    git clone https://github.com/haltman-io/search-leaks.git
+    cd search-leaks
+    go mod tidy
+    go build -o search-leaks ./cmd/search-leaks
+    ```
+
+    ```bash
+    ./search-leaks -h
+    ```
+  </Tab>
+
+  <Tab title="Install to $GOBIN" icon="download">
+    ```bash
+    go install github.com/haltman-io/search-leaks/cmd/search-leaks@latest
+    ```
+
+    ```bash
+    search-leaks -h
+    ```
+  </Tab>
+</Tabs>
+
+<Callout kind="tip">
+  If the binary is not found, ensure `$GOBIN` (or `$(go env GOPATH)/bin`) is in your `PATH`.
+</Callout>
+
+---
+
+## Configuration
+
+**No configuration is required.**
+
+- No API keys
+- No environment variables
+- No config files
+
+All behavior is controlled via **CLI flags** and execution mode.
+
+---
+
+## Usage
+
+### Basic usage
+
+Single domain:
+
+```bash
+search-leaks -t example.com
+```
+
+Single email:
+
+```bash
+search-leaks -t user@example.com
+```
+
+---
+
+### Target input methods
+
+Supported input sources:
+
+- `--target / -t` (repeatable, comma-separated)
+- `--target-list / -tL` (file paths, repeatable)
+- `stdin` / pipeline
+
+```bash
+search-leaks -t google.com,twitter.com
+```
+
+```bash
+search-leaks -tL targets1.txt -tL targets2.txt
+```
+
+```bash
+cat targets.txt | search-leaks
+```
+
+---
+
+### Execution modes
+
+Only **one mode** can be active per run.
+
+<Tabs>
+  <Tab title="Automatic (default)" icon="zap">
+    Automatically detects target type — email → email endpoint, anything else → domain endpoint.
+
+    ```bash
+    search-leaks -t example.com -t user@example.com
+    ```
+  </Tab>
+
+  <Tab title="Forced domain" icon="globe">
+    All targets are treated as **domains**. If an email is provided, its domain is extracted.
+
+    ```bash
+    search-leaks -d -t user@corp.com
+    ```
+  </Tab>
+
+  <Tab title="Forced email" icon="mail">
+    All targets are treated as **emails**. If a domain is provided, it is expanded into common mailbox aliases (`postmaster@`, `abuse@`, `admin@`, etc.).
+
+    ```bash
+    search-leaks -e -t example.com
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+### Statistics-only mode (domain)
+
+For quick reporting, use **statistics-only** output:
+
+```bash
+search-leaks --statistics -t tesla.com
+```
+
+Prints **only high-signal fields**: `total`, `employees`, `users`, `third_parties`, `last_employee_compromised`, `last_user_compromised`.
+
+---
+
+## Output format
+
+Output is **structured and line-oriented**, designed for easy parsing:
+
+```text
+[target] [request_url]
+[target] [key: value]
+[target] [arrayItem(n)] [key: value]
+```
+
+Example (email query):
+
+```text
+[user@example.com] [total_corporate_services: 5]
+[user@example.com] [stealer(1)] [operating_system: Windows 10]
+```
+
+Disable ANSI colors:
+
+```bash
+search-leaks --no-color
+```
+
+---
+
+## Possible Problems / Important Notes
+
+### Rate limiting
+
+- Enforced limit: **50 requests per 10 seconds**
+- The tool automatically throttles requests
+- Execution **aborts after 3 consecutive API errors**
+
+### Privacy & data handling
+
+- Only **statistical metadata** is retrieved
+- No breach payloads, passwords, or raw dumps are stored
+- Output is printed directly to stdout
+
+### Intended use
+
+This tool is intended for authorized security testing, corporate exposure assessment, and vendor risk analysis. Do **not** use it to target individuals or organizations without authorization.
+
+---
+
+## External References
+
+- [Hudson Rock Cavalier OSINT](https://www.hudsonrock.com/)
+- [GitHub: haltman-io/search-leaks](https://github.com/haltman-io/search-leaks)

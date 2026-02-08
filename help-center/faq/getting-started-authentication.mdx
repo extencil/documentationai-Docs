@@ -1,20 +1,38 @@
 ---
-title: How do I sign in to Haltman?
-description: Learn how to authenticate to access Haltman.
+title: Getting Started & Authentication FAQ
+description: Common questions about getting started with Haltman.io tools and services.
 ---
 
-## Signing In
+## How do I get started?
 
-Access Haltman at `https://app.haltman.com`.
+Visit the [Quickstart](/quickstart) page — it provides a guided overview of all available tools and services.
 
-1. Click **Sign In** on the homepage.
-2. Enter your email address.
-3. Use your password or "Sign in with Google".
-4. Successful login redirects you to your dashboard.
+## Do I need an account to use the mail forwarding service?
 
-## Reset Password
+No. The service at [forward.haltman.io](https://forward.haltman.io) does not require registration. You just need to confirm ownership of your destination email.
 
-If you forgot your password, click **Forgot Password?** and follow the instructions.
+## Do the OSINT tools require API keys?
 
-## Notes
-- Email verification may be required on first login.
+It depends on the tool:
+
+| Tool | API Key Required |
+|------|:---:|
+| ip-thc | No |
+| search-leaks | No |
+| reverse-whois | Yes (WhoisXML) |
+| sub-alter | Yes (WhoisXML) |
+| brave-search | Yes (Brave) |
+
+## How do I install the CLI tools?
+
+All tools require **Go 1.22+**. Install via `go install`:
+
+```bash
+go install github.com/haltman-io/<tool-name>/cmd/<tool-name>@latest
+```
+
+Or clone and build from source. See each tool's documentation page for details.
+
+## How do I report a security issue?
+
+Contact [security@haltman.io](mailto:security@haltman.io). We respond as quickly as possible.

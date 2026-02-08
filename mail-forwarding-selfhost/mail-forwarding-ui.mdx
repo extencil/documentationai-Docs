@@ -1,0 +1,93 @@
+---
+title: mail-forwarding-ui
+description: >-
+  Next.js frontend for managing forwarding aliases via the Mail Forwarding API.
+  Built with React, TailwindCSS, Radix UI, and ShadCN.
+---
+
+**mail-forwarding-ui** is the **web UI** for the Free Mail Forwarding Service, maintained by a **member of** [Haltman.io](https://haltman.io). It is a **Next.js** application that talks to the [mail-forwarding-api](/mail-forwarding-selfhost/mail-forwarding-api) to let users:
+
+- Request alias creation (subscribe)
+- Request alias removal (unsubscribe)
+
+**Tech stack:** Next.js, React, TailwindCSS, Radix UI, ShadCN
+
+<Callout kind="alert">
+  This UI is **not standalone**: it must point to a working API instance, and domains must be authorized in the database.
+</Callout>
+
+---
+
+## Prerequisites
+
+- A running **mail-forwarding-api** (already deployed and reachable)
+- Domains already present/authorized in the core stack database (`domain` table)
+- Node.js (current LTS recommended)
+- npm (or compatible package manager)
+
+---
+
+## Installation
+
+```bash
+git clone https://github.com/haltman-io/mail-forwarding
+cd ./mail-forwarding/mail-forwarding-ui/
+npm install
+```
+
+---
+
+## Configuration
+
+Create a `.env.local` file in the project root:
+
+```bash
+NEXT_PUBLIC_API_HOST=<API URL WITHOUT SLASH ON END>
+```
+
+Example:
+
+```bash
+NEXT_PUBLIC_API_HOST=https://mail.haltman.io
+```
+
+<Callout kind="info">
+  - `NEXT_PUBLIC_API_HOST` **must not** end with `/`
+  - `NEXT_PUBLIC_*` variables are **embedded into the frontend build** and visible to users — do not put secrets here
+</Callout>
+
+---
+
+## Running
+
+<Tabs>
+  <Tab title="Development" icon="code">
+    ```bash
+    npm run dev
+    ```
+  </Tab>
+
+  <Tab title="Production" icon="globe">
+    ```bash
+    npm run build
+    npm run start
+    ```
+  </Tab>
+</Tabs>
+
+Available scripts:
+- `dev` → `next dev`
+- `build` → `next build`
+- `start` → `next start`
+- `lint` → `eslint`
+
+---
+
+## Possible Problems / Important Notes
+
+| Problem | Cause |
+|---------|-------|
+| UI loads but actions fail | `NEXT_PUBLIC_API_HOST` wrong, unreachable, or with trailing slash |
+| Domain not selectable | Domain not present/active in the database |
+| Mixed content / CORS issues | Serve UI and API over HTTPS; ensure API allows the UI origin |
+| Wrong values in production | If you change `.env.local`, you must rebuild (`npm run build`) |

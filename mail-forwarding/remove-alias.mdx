@@ -1,0 +1,42 @@
+---
+title: Remove Your Alias
+description: How to remove an existing mail forwarding alias from forward.haltman.io.
+---
+
+## Remove an alias
+
+Call the unsubscribe endpoint with your full alias address:
+
+```
+https://mail.haltman.io/forward/unsubscribe?alias=<YOUR-ALIAS-ADDRESS>
+```
+
+### Example
+
+```bash
+curl 'https://mail.haltman.io/forward/unsubscribe?alias=docs.curl%40fwd.haltman.io'
+```
+
+<Frame>
+  <img src="https://cdn.hashnode.com/res/hashnode/image/upload/v1768368591211/f5e11168-2750-4d7a-8dc4-12040ec5ad49.png" alt="Unsubscribe request" />
+</Frame>
+
+### Confirm removal (anti-abuse)
+
+A confirmation email is sent to the alias's destination address. Click the link to complete removal.
+
+<Frame>
+  <img src="https://cdn.hashnode.com/res/hashnode/image/upload/v1768368627542/561d5fe8-6629-4356-b3d6-3ca2d05d7725.png" alt="Removal confirmation" />
+</Frame>
+
+<Frame>
+  <img src="https://cdn.hashnode.com/res/hashnode/image/upload/v1768368657441/61cc7c15-9c65-4890-acdd-697bd366e18f.png" alt="Removal confirmed" />
+</Frame>
+
+### Verify removal
+
+Send a test email to the old alias — it should no longer be forwarded.
+
+<Frame>
+  <img src="https://cdn.hashnode.com/res/hashnode/image/upload/v1768368755439/f019a058-c572-4371-82a7-e80b559c0308.png" alt="Alias removed verification" />
+</Frame>

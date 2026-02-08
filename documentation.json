@@ -13,108 +13,128 @@
     }
   },
   "navigation": {
-    "tabs": [
+    "languages": [
       {
-        "tab": "Documentation",
-        "icon": "book",
-        "groups": [
+        "language": "en",
+        "versions": [
           {
-            "group": "Getting Started",
-            "icon": "rocket",
-            "pages": [
+            "version": "11",
+            "products": [
               {
-                "title": "Introduction",
-                "path": "introduction",
-                "icon": "home"
-              },
-              {
-                "title": "Quickstart",
-                "path": "quickstart",
-                "icon": "zap"
+                "product": "SDAS",
+                "tabs": [
+                  {
+                    "tab": "Documentation",
+                    "icon": "book",
+                    "dropdowns": [
+                      {
+                        "dropdown": "TEST",
+                        "groups": [
+                          {
+                            "group": "Getting Started",
+                            "icon": "rocket",
+                            "pages": [
+                              {
+                                "title": "Introduction",
+                                "path": "introduction",
+                                "icon": "home"
+                              },
+                              {
+                                "title": "Quickstart",
+                                "path": "quickstart",
+                                "icon": "zap"
+                              }
+                            ]
+                          },
+                          {
+                            "group": "Core Concepts",
+                            "icon": "layers",
+                            "pages": [
+                              {
+                                "title": "Features",
+                                "path": "features",
+                                "icon": "file-text"
+                              },
+                              {
+                                "title": "Integrations",
+                                "path": "integrations",
+                                "icon": "plug"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "tab": "API Reference",
+                    "icon": "code",
+                    "groups": [
+                      {
+                        "group": "Endpoints",
+                        "openapi": "api-reference/openapi.yaml",
+                        "pages": []
+                      }
+                    ]
+                  },
+                  {
+                    "tab": "Help Center",
+                    "icon": "help-circle",
+                    "pages": [
+                      {
+                        "title": "Help Center",
+                        "path": "help-center",
+                        "icon": "home"
+                      },
+                      {
+                        "group": "FAQs",
+                        "icon": "help-circle",
+                        "expandable": false,
+                        "pages": [
+                          {
+                            "title": "Getting Started Authentication",
+                            "path": "help-center/faq/getting-started-authentication"
+                          }
+                        ]
+                      },
+                      {
+                        "group": "Troubleshooting",
+                        "icon": "alert-triangle",
+                        "expandable": false,
+                        "pages": [
+                          {
+                            "title": "Missing Docs",
+                            "path": "help-center/troubleshooting/missing-docs"
+                          }
+                        ]
+                      },
+                      {
+                        "group": "Guides",
+                        "icon": "book-open",
+                        "expandable": false,
+                        "pages": [
+                          {
+                            "title": "Create Project Space",
+                            "path": "help-center/guides/create-project-space"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "tab": "Changelog",
+                    "icon": "clock",
+                    "pages": [
+                      {
+                        "title": "Release History",
+                        "path": "changelog",
+                        "icon": "history"
+                      }
+                    ]
+                  }
+                ]
               }
             ]
-          },
-          {
-            "group": "Core Concepts",
-            "icon": "layers",
-            "pages": [
-              {
-                "title": "Features",
-                "path": "features",
-                "icon": "file-text"
-              },
-              {
-                "title": "Integrations",
-                "path": "integrations",
-                "icon": "plug"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API Reference",
-        "icon": "code",
-        "groups": [
-          {
-            "group": "Endpoints",
-            "openapi": "api-reference/openapi.yaml",
-            "pages": []
-          }
-        ]
-      },
-      {
-        "tab": "Help Center",
-        "icon": "help-circle",
-        "pages": [
-          {
-            "title": "Help Center",
-            "path": "help-center",
-            "icon": "home"
-          },
-          {
-            "group": "FAQs",
-            "icon": "help-circle",
-            "expandable": false,
-            "pages": [
-              {
-                "title": "Getting Started Authentication",
-                "path": "help-center/faq/getting-started-authentication"
-              }
-            ]
-          },
-          {
-            "group": "Troubleshooting",
-            "icon": "alert-triangle",
-            "expandable": false,
-            "pages": [
-              {
-                "title": "Missing Docs",
-                "path": "help-center/troubleshooting/missing-docs"
-              }
-            ]
-          },
-          {
-            "group": "Guides",
-            "icon": "book-open",
-            "expandable": false,
-            "pages": [
-              {
-                "title": "Create Project Space",
-                "path": "help-center/guides/create-project-space"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Changelog",
-        "icon": "clock",
-        "pages": [
-          {
-            "title": "Release History",
-            "path": "changelog",
-            "icon": "history"
           }
         ]
       }

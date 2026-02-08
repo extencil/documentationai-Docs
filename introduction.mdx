@@ -1,9 +1,10 @@
 ---
 title: Introduction to Haltman
-description: Discover Haltman, your default documentation space for organizing and managing project documentation with ease and efficiency.
+description: >-
+  Discover Haltman, yours default documentation space for organizing and
+  managing project documentation with ease and efficiency.
 ---
-
-<Callout kind="info" title="Starter Kit Template">
+<Callout kind="info" collapsed="false">
   This documentation was generated as a starter kit template based on your brand. Please review and customize the content to accurately reflect your product's features, APIs, and capabilities.
 </Callout>
 
@@ -17,19 +18,21 @@ This platform supports version control, search, and role-based access, ensuring 
 
 Haltman offers essential tools to enhance your documentation experience.
 
-<Columns cols={3}>
-  <Card title="Organized Spaces" icon="folder" href="#spaces">
+<Columns cols="3">
+  <Card title="Organized Spaces" href="#spaces" icon="folder" horizontal="false">
     Create unlimited documentation spaces for different projects. Group related docs with folders and tags for quick access.
   </Card>
-  <Card title="Collaboration Tools" icon="users" href="#collaboration">
+
+  <Card title="Collaboration Tools" href="#collaboration" icon="users" horizontal="false">
     Invite team members, set permissions, and track changes with version history. Real-time editing keeps everyone aligned.
   </Card>
-  <Card title="Search and Navigation" icon="search" href="#navigation">
+
+  <Card title="Search and Navigation" href="#navigation" icon="search" horizontal="false">
     Powerful full-text search finds content instantly. Breadcrumbs and sidebars make browsing effortless.
   </Card>
 </Columns>
 
-<Callout kind="success">
+<Callout kind="success" collapsed="false">
   These features help you scale documentation from small projects to enterprise needs.
 </Callout>
 
@@ -41,9 +44,11 @@ Determine if Haltman matches your role with these common use cases.
   <Tab title="Developers & Engineers" icon="code">
     Document APIs, codebases, and deployment guides. Embed code snippets and integrate with Git for automatic updates.
   </Tab>
-  <Tab title="Product Teams" icon="package" >
+
+  <Tab title="Product Teams" icon="package">
     Maintain user guides, changelogs, and feature specs. Use visual components like diagrams for clear explanations.
   </Tab>
+
   <Tab title="Freelancers & Small Teams" icon="user">
     Manage client projects without complex setups. Export docs to PDF or share public links easily.
   </Tab>
@@ -54,23 +59,25 @@ Determine if Haltman matches your role with these common use cases.
 Get up and running with Haltman in minutes.
 
 <Steps>
-  <Step title="Create Account" icon="user-plus">
+  <Step title="Create Account" icon="user-plus" title-type="p">
     Visit `https://app.haltman.com` and sign up with your email. Verify your account to unlock full features.
   </Step>
-  <Step title="Set Up Space" icon="folder-plus">
+
+  <Step title="Set Up Space" icon="folder-plus" title-type="p">
     Create your first documentation space. Add a name like "My Project Docs" and invite collaborators.
   </Step>
-  <Step title="Add Content" icon="edit-3">
+
+  <Step title="Add Content" icon="edit-3" title-type="p">
     Start a new page with Markdown or our visual editor. Use components like `<Callout>` for highlights.
 
-````markdown
-# Welcome Page
+    ```markdown
+    # Welcome Page
 
-Welcome to your project!
-````
-
+    Welcome to your project!
+    ```
   </Step>
-  <Step title="Publish & Share" icon="share-2">
+
+  <Step title="Publish & Share" icon="share-2" title-type="p">
     Make pages public or share private links. Set up webhooks for notifications on updates.
   </Step>
 </Steps>
@@ -83,25 +90,29 @@ Learn how to move around the documentation effectively.
   <Expandable title="Sidebar Menu" default-open="true">
     The left sidebar shows spaces and pages. Use the search bar at the top for quick jumps. Click the `+` icon to add new content.
   </Expandable>
-  <Expandable title="Page Tools">
+
+  <Expandable title="Page Tools" default-open="false">
     Each page has edit, history, and export buttons in the top-right. Use `@mentions` to notify team members.
   </Expandable>
-  <Expandable title="Advanced Search">
+
+  <Expandable title="Advanced Search" default-open="false">
     Filter by tags, spaces, or date. Advanced queries support boolean operators like `docs AND api`.
   </Expandable>
 </ExpandableGroup>
 
 ## Next Steps
 
-<Columns cols={2}>
-  <Card title="Quickstart Guide" icon="zap" href="/quickstart">
+<Columns cols="2">
+  <Card title="Quickstart Guide" href="/quickstart" icon="zap" horizontal="false">
     Dive into detailed setup instructions and your first project.
   </Card>
-  <Card title="Authentication" icon="shield" href="/authentication">
+
+  <Card title="Authentication" href="/authentication" icon="shield" horizontal="false">
     Secure your spaces with API keys and user management.
   </Card>
 </Columns>
 
-<Callout kind="tip">
+<Callout kind="tip" collapsed="false">
   Explore the quickstart next to build your first documentation space.
 </Callout>
+

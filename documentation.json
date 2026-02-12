@@ -43,90 +43,8 @@
                 "icon": "plug"
               }
             ]
-          },
-          {
-            "group": "Mail Forwarding (User)",
-            "icon": "mail",
-            "pages": [
-              {
-                "title": "Get Started",
-                "path": "mail-forwarding/get-started",
-                "icon": "home"
-              },
-              {
-                "title": "Create Alias (UI)",
-                "path": "mail-forwarding/create-alias-ui",
-                "icon": "monitor"
-              },
-              {
-                "title": "Create Alias (cURL)",
-                "path": "mail-forwarding/create-alias-curl",
-                "icon": "terminal"
-              },
-              {
-                "title": "Remove Alias",
-                "path": "mail-forwarding/remove-alias",
-                "icon": "trash-2"
-              },
-              {
-                "title": "Add Your Domain",
-                "path": "mail-forwarding/add-domain",
-                "icon": "globe"
-              },
-              {
-                "title": "Add Your Subdomain",
-                "path": "mail-forwarding/add-subdomain",
-                "icon": "globe"
-              }
-            ]
-          },
-          {
-            "group": "Mail Forwarding (Self-Host)",
-            "icon": "server",
-            "pages": [
-              {
-                "title": "Get Started",
-                "path": "mail-forwarding-selfhost/get-started",
-                "icon": "home"
-              },
-              {
-                "title": "mail-forwarding-core",
-                "path": "mail-forwarding-selfhost/mail-forwarding-core",
-                "icon": "server"
-              },
-              {
-                "title": "mail-forwarding-api",
-                "path": "mail-forwarding-selfhost/mail-forwarding-api",
-                "icon": "code"
-              },
-              {
-                "title": "mail-forwarding-ui",
-                "path": "mail-forwarding-selfhost/mail-forwarding-ui",
-                "icon": "monitor"
-              },
-              {
-                "title": "Cleanup Cronjob",
-                "path": "mail-forwarding-selfhost/cleanup-cronjob",
-                "icon": "clock"
-              },
-              {
-                "title": "DNS Configuration",
-                "path": "mail-forwarding-selfhost/dns-configuration",
-                "icon": "globe"
-              }
-            ]
           }
         ]
-      },
-      {
-        "tab": "API Reference",
-        "icon": "code",
-        "groups": []
-      },
-      {
-        "tab": "Changelog",
-        "icon": "clock",
-        "pages": []
       },
       {
         "tab": "Open Source Tools",
@@ -167,8 +85,81 @@
       },
       {
         "tab": "Email Shield Project",
-        "pages": [],
-        "icon": "lucide-mail-check"
+        "icon": "lucide-mail-check",
+        "groups": [
+          {
+            "group": "Mail Forwarding (Self-Host)",
+            "icon": "server",
+            "pages": [
+              {
+                "title": "Get Started",
+                "path": "mail-forwarding-selfhost/get-started",
+                "icon": "home"
+              },
+              {
+                "title": "mail-forwarding-core",
+                "path": "mail-forwarding-selfhost/mail-forwarding-core",
+                "icon": "server"
+              },
+              {
+                "title": "mail-forwarding-api",
+                "path": "mail-forwarding-selfhost/mail-forwarding-api",
+                "icon": "code"
+              },
+              {
+                "title": "mail-forwarding-ui",
+                "path": "mail-forwarding-selfhost/mail-forwarding-ui",
+                "icon": "monitor"
+              },
+              {
+                "title": "Cleanup Cronjob",
+                "path": "mail-forwarding-selfhost/cleanup-cronjob",
+                "icon": "clock"
+              },
+              {
+                "title": "DNS Configuration",
+                "path": "mail-forwarding-selfhost/dns-configuration",
+                "icon": "globe"
+              }
+            ]
+          },
+          {
+            "group": "Mail Forwarding (User)",
+            "icon": "mail",
+            "pages": [
+              {
+                "title": "Get Started",
+                "path": "mail-forwarding/get-started",
+                "icon": "home"
+              },
+              {
+                "title": "Create Alias (UI)",
+                "path": "mail-forwarding/create-alias-ui",
+                "icon": "monitor"
+              },
+              {
+                "title": "Create Alias (cURL)",
+                "path": "mail-forwarding/create-alias-curl",
+                "icon": "terminal"
+              },
+              {
+                "title": "Remove Alias",
+                "path": "mail-forwarding/remove-alias",
+                "icon": "trash-2"
+              },
+              {
+                "title": "Add Your Domain",
+                "path": "mail-forwarding/add-domain",
+                "icon": "globe"
+              },
+              {
+                "title": "Add Your Subdomain",
+                "path": "mail-forwarding/add-subdomain",
+                "icon": "globe"
+              }
+            ]
+          }
+        ]
       },
       {
         "tab": "API Reference 2",

@@ -2,12 +2,12 @@
   "name": "Haltman",
   "colors": {
     "light": {
-      "brand": "#ff2a2a",
+      "brand": "#c62424",
       "heading": "#1a1a1a",
       "text": "#374151"
     },
     "dark": {
-      "brand": "#ff2a2a",
+      "brand": "#c62424",
       "heading": "#f2f2f2",
       "text": "#c1c1c1"
     }
@@ -41,37 +41,6 @@
                 "title": "Integrations & Community",
                 "path": "integrations",
                 "icon": "plug"
-              }
-            ]
-          },
-          {
-            "group": "Open Source Tools",
-            "icon": "terminal",
-            "pages": [
-              {
-                "title": "ip-thc",
-                "path": "open-source/ip-thc",
-                "icon": "search"
-              },
-              {
-                "title": "search-leaks",
-                "path": "open-source/search-leaks",
-                "icon": "shield"
-              },
-              {
-                "title": "reverse-whois",
-                "path": "open-source/reverse-whois",
-                "icon": "layers"
-              },
-              {
-                "title": "sub-alter",
-                "path": "open-source/sub-alter",
-                "icon": "git-branch"
-              },
-              {
-                "title": "brave-search",
-                "path": "open-source/brave-search",
-                "icon": "compass"
               }
             ]
           },
@@ -152,6 +121,58 @@
       {
         "tab": "API Reference",
         "icon": "code",
+        "groups": []
+      },
+      {
+        "tab": "Changelog",
+        "icon": "clock",
+        "pages": []
+      },
+      {
+        "tab": "Open Source Tools",
+        "groups": [
+          {
+            "group": "Open Source Tools",
+            "icon": "terminal",
+            "pages": [
+              {
+                "title": "ip-thc",
+                "path": "open-source/ip-thc",
+                "icon": "search"
+              },
+              {
+                "title": "search-leaks",
+                "path": "open-source/search-leaks",
+                "icon": "shield"
+              },
+              {
+                "title": "reverse-whois",
+                "path": "open-source/reverse-whois",
+                "icon": "layers"
+              },
+              {
+                "title": "sub-alter",
+                "path": "open-source/sub-alter",
+                "icon": "git-branch"
+              },
+              {
+                "title": "brave-search",
+                "path": "open-source/brave-search",
+                "icon": "compass"
+              }
+            ]
+          }
+        ],
+        "icon": "album"
+      },
+      {
+        "tab": "Email Shield Project",
+        "pages": [],
+        "icon": "lucide-mail-check"
+      },
+      {
+        "tab": "API Reference 2",
+        "icon": "lucide-code2",
         "groups": [
           {
             "group": "Endpoints",
@@ -161,59 +182,15 @@
         ]
       },
       {
-        "tab": "Help Center",
-        "icon": "help-circle",
-        "pages": [
-          {
-            "title": "Help Center",
-            "path": "help-center",
-            "icon": "home"
-          },
-          {
-            "group": "FAQs",
-            "icon": "help-circle",
-            "expandable": false,
-            "pages": [
-              {
-                "title": "Getting Started & Authentication",
-                "path": "help-center/faq/getting-started-authentication"
-              }
-            ]
-          },
-          {
-            "group": "Troubleshooting",
-            "icon": "alert-triangle",
-            "expandable": false,
-            "pages": [
-              {
-                "title": "Common Issues",
-                "path": "help-center/troubleshooting/missing-docs"
-              }
-            ]
-          },
-          {
-            "group": "Guides",
-            "icon": "book-open",
-            "expandable": false,
-            "pages": [
-              {
-                "title": "Your First Mail Alias",
-                "path": "help-center/guides/create-project-space"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Changelog",
-        "icon": "clock",
+        "tab": "Changelog 2",
         "pages": [
           {
             "title": "Release History",
             "path": "changelog",
             "icon": "history"
           }
-        ]
+        ],
+        "icon": "clock"
       }
     ]
   },

@@ -162,7 +162,7 @@
         ]
       },
       {
-        "tab": "API Reference 2",
+        "tab": "API Reference",
         "icon": "lucide-code2",
         "groups": [
           {
@@ -173,7 +173,7 @@
         ]
       },
       {
-        "tab": "Changelog 2",
+        "tab": "Changelog",
         "pages": [
           {
             "title": "Release History",

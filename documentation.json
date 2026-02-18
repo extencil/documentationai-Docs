@@ -84,7 +84,7 @@
         "icon": "album"
       },
       {
-        "tab": "Email Shield Project",
+        "tab": "mail-forwarding",
         "icon": "lucide-mail-check",
         "groups": [
           {

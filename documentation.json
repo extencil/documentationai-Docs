@@ -151,11 +151,6 @@
                 "title": "Add Your Domain",
                 "path": "mail-forwarding/add-domain",
                 "icon": "globe"
-              },
-              {
-                "title": "Add Your Subdomain",
-                "path": "mail-forwarding/add-subdomain",
-                "icon": "globe"
               }
             ]
           }

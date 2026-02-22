@@ -88,6 +88,16 @@
         "icon": "lucide-mail-check",
         "groups": [
           {
+            "group": "Start from here",
+            "pages": [
+              {
+                "title": "Get started",
+                "path": "get-started"
+              }
+            ],
+            "icon": "stars"
+          },
+          {
             "group": "Mail Forwarding (Self-Host)",
             "icon": "server",
             "pages": [
